@@ -73,11 +73,12 @@ const SignInForm = () => {
         email,
         type: "sign-in",
         fetchOptions: {
-          onSuccess: () => {
+          onSuccess: (data) => {
+            console.log("OTP sent data:", data)
             router.push("/verify-otp?email=" + encodeURIComponent(email))
           },
-          onError: (error) => {
-            console.log(error)
+          onError: () => {
+            toast.error("Failed to send OTP. Please try again.")
           }
         }
       });
@@ -115,9 +116,9 @@ const SignInForm = () => {
         <div className="h-px w-full bg-border" />
       </div>
 
-      <form className="space-y-2" onSubmit={(e) => {
+      <form className="space-y-2" onSubmit={async (e) => {
         e.preventDefault()
-        loginWithEmail()
+        await loginWithEmail()
       }}>
         <p className="text-start text-muted-foreground text-xs">
           Enter your email address to sign in or create an account
