@@ -22,10 +22,8 @@ const SignInForm = () => {
     startGoogleTransition(async () => {
       await authClient.signIn.social({
         provider: "google",
+        callbackURL: "/dashboard",
         fetchOptions: {
-          onSuccess: () => {
-            router.push("/dashboard")
-          },
           onError: () => {
             toast.error("Google login failed. Please try again or use another method.", {
               action: {
@@ -44,10 +42,8 @@ const SignInForm = () => {
     startGithubTransition(async () => {
       await authClient.signIn.social({
         provider: "github",
+        callbackURL: "/dashboard",
         fetchOptions: {
-          onSuccess: () => {
-            router.push("/dashboard")
-          },
           onError: () => {
             toast.error("Github login failed. Please try again or use another method.",
               {
@@ -73,8 +69,7 @@ const SignInForm = () => {
         email,
         type: "sign-in",
         fetchOptions: {
-          onSuccess: (data) => {
-            console.log("OTP sent data:", data)
+          onSuccess: () => {
             router.push("/verify-otp?email=" + encodeURIComponent(email))
           },
           onError: () => {
