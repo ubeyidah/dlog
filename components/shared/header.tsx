@@ -16,7 +16,7 @@ const menuItems = [
 ]
 
 export const Header = () => {
-  const { data } = authClient.useSession.get()
+  const { data } = authClient.useSession()
   const [menuState, setMenuState] = React.useState(false)
   return (
     <header>
@@ -72,7 +72,7 @@ export const Header = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 {
-                  data ? <>                <Button variant="outline" render={<Link href="/sign-in" />} nativeButton={false}><span>Login</span></Button>
+                  !data ? <><Button variant="outline" render={<Link href="/sign-in" />} nativeButton={false}><span>Login</span></Button>
                     <Button render={<Link href="/sign-up" />} nativeButton={false}><span>Sign Up</span></Button>
                   </> : <Button render={<Link href="/dashboard" />} nativeButton={false}><span>Dashboard</span></Button>
 
