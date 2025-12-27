@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -33,7 +34,7 @@ export default function RootLayout({
         <TRPCReactProvider>
           {children}
         </TRPCReactProvider>
-
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );

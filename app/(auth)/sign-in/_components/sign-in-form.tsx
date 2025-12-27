@@ -1,12 +1,68 @@
 "use client"
-import { Button } from "@/components/ui/button"
+import { ButtonLoader } from "@/components/shared/button-loader"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import { authClient } from "@/lib/auth-client"
 import { Mail } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
 const SignInForm = () => {
+  const router = useRouter()
+  const [googlePending, startGoogleTransition] = useTransition()
+  const [githubPending, startGithubTransition] = useTransition()
+
+  const loginWithGoogle = async () => {
+    startGoogleTransition(async () => {
+      await authClient.signIn.social({
+        provider: "google",
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/dashboard")
+          },
+          onError: () => {
+            toast.error("Google login failed. Please try again or use another method.", {
+              action: {
+                label: "Retry",
+                onClick: () => loginWithGoogle()
+              }
+            })
+          }
+        }
+      });
+    })
+  }
+
+
+  const loginWithGithub = async () => {
+    startGithubTransition(async () => {
+      await authClient.signIn.social({
+        provider: "github",
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/dashboard")
+          },
+          onError: () => {
+            toast.error("Github login failed. Please try again or use another method.",
+              {
+                action: {
+                  label: "Retry",
+                  onClick: () => loginWithGithub()
+                }
+              }
+            )
+          }
+        }
+      });
+    })
+  }
+
+
+  const shouldDisable = googlePending || githubPending
+
   return (
     <div className="mx-auto space-y-4 sm:w-sm">
       <div>
@@ -21,14 +77,14 @@ const SignInForm = () => {
         </p>
       </div>
       <div className="space-y-2">
-        <Button className="w-full" variant={"outline"} size="lg" type="button">
+        <ButtonLoader isLoading={googlePending} className="w-full" variant={"outline"} disabled={shouldDisable} onClick={loginWithGoogle} size="lg" type="button">
           <GoogleIcon />
           Continue with Google
-        </Button>
-        <Button className="w-full" variant={"outline"} size="lg" type="button">
+        </ButtonLoader>
+        <ButtonLoader isLoading={githubPending} className="w-full" variant={"outline"} size="lg" type="button" disabled={shouldDisable} onClick={loginWithGithub}>
           <GithubIcon />
           Continue with GitHub
-        </Button>
+        </ButtonLoader>
       </div>
       <div className="flex w-full items-center justify-center">
         <div className="h-px w-full bg-border" />
@@ -50,9 +106,9 @@ const SignInForm = () => {
           </InputGroupAddon>
         </InputGroup>
 
-        <Button className="w-full" type="button">
+        <ButtonLoader disabled={shouldDisable} className="w-full" type="button">
           Continue With Email
-        </Button>
+        </ButtonLoader>
       </form>
       <p className="mt-8 text-muted-foreground text-sm text-center">
         By clicking continue, you agree to our{" "}
