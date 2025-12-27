@@ -6,6 +6,7 @@ import { Menu, X } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react';
 import Wrapper from './wrapper'
 import Image from 'next/image'
+import { authClient } from '@/lib/auth-client'
 
 const menuItems = [
   { name: 'Features', href: '#features' },
@@ -15,6 +16,7 @@ const menuItems = [
 ]
 
 export const Header = () => {
+  const { data } = authClient.useSession.get()
   const [menuState, setMenuState] = React.useState(false)
   return (
     <header>
@@ -69,8 +71,12 @@ export const Header = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button variant="outline" render={<Link href="/sign-in" />} nativeButton={false}><span>Login</span></Button>
-                <Button render={<Link href="/sign-up" />} nativeButton={false}><span>Sign Up</span></Button>
+                {
+                  data ? <>                <Button variant="outline" render={<Link href="/sign-in" />} nativeButton={false}><span>Login</span></Button>
+                    <Button render={<Link href="/sign-up" />} nativeButton={false}><span>Sign Up</span></Button>
+                  </> : <Button render={<Link href="/dashboard" />} nativeButton={false}><span>Dashboard</span></Button>
+
+                }
               </div>
             </div>
           </div>

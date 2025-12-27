@@ -2,18 +2,21 @@
 import { ButtonLoader } from "@/components/shared/button-loader"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { authClient } from "@/lib/auth-client"
+import { emailSchema } from "@/lib/validation/auth.schema"
 import { Mail } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "sonner"
 
 const SignInForm = () => {
   const router = useRouter()
+  const [email, setEmail] = useState("")
   const [googlePending, startGoogleTransition] = useTransition()
   const [githubPending, startGithubTransition] = useTransition()
+  const [emailPending, startEmailTransition] = useTransition()
 
   const loginWithGoogle = async () => {
     startGoogleTransition(async () => {
@@ -60,8 +63,28 @@ const SignInForm = () => {
     })
   }
 
+  const loginWithEmail = async () => {
+    // client side validation
+    const { error } = emailSchema.safeParse({ email })
+    if (error) return toast.error(error.issues[0].message)
 
-  const shouldDisable = googlePending || githubPending
+    startEmailTransition(async () => {
+      await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: "sign-in",
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/verify-otp?email=" + encodeURIComponent(email))
+          },
+          onError: (error) => {
+            console.log(error)
+          }
+        }
+      });
+    })
+  }
+
+  const shouldDisable = googlePending || githubPending || emailPending
 
   return (
     <div className="mx-auto space-y-4 sm:w-sm">
@@ -92,7 +115,10 @@ const SignInForm = () => {
         <div className="h-px w-full bg-border" />
       </div>
 
-      <form className="space-y-2">
+      <form className="space-y-2" onSubmit={(e) => {
+        e.preventDefault()
+        loginWithEmail()
+      }}>
         <p className="text-start text-muted-foreground text-xs">
           Enter your email address to sign in or create an account
         </p>
@@ -100,13 +126,15 @@ const SignInForm = () => {
           <InputGroupInput
             placeholder="your.email@example.com"
             type="email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
           />
           <InputGroupAddon>
             <HugeiconsIcon icon={Mail} strokeWidth={2} />
           </InputGroupAddon>
         </InputGroup>
 
-        <ButtonLoader disabled={shouldDisable} className="w-full" type="button">
+        <ButtonLoader isLoading={emailPending} disabled={shouldDisable} className="w-full" type="submit">
           Continue With Email
         </ButtonLoader>
       </form>
