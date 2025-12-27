@@ -1,8 +1,11 @@
+import { Suspense } from "react"
 import VerifyOTPForm from "./_components/verify-otp-form"
 
 const VerifyOTP = () => {
   return (
-    <VerifyOTPForm />
+    <Suspense>
+      <VerifyOTPForm />
+    </Suspense>
   )
 }
 

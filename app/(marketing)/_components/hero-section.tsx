@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
 import {
   Avatar,
@@ -18,8 +18,12 @@ export default function HeroSection() {
               <p className="text-muted-foreground my-8 max-w-2xl text-balance text-xl">DLOG is your minimalist journal for daily reflections, thoughts, and progress no distractions, just focus.</p>
 
               <div className="flex items-center gap-3">
-                <Button size="lg" className="pr-4.5" render={<Link href="/sign-in" />} nativeButton={false}><span className="text-nowrap">Start Journaling</span></Button>
-                <Button key={2} size="lg" variant="outline" className="pl-5" render={<Link href="#how-it-works" />} nativeButton={false}><span className="text-nowrap">See How It Works</span></Button>
+                <Link href="/sign-in" className={buttonVariants({ size: "lg", className: "pr-4.5" })}>
+                  <span className="text-nowrap">Start Journaling</span>
+                </Link>
+                <Link href="#how-it-works" className={buttonVariants({ size: "lg", variant: "outline", className: "pl-5" })}>
+                  <span className="text-nowrap">See How It Works</span>
+                </Link>
               </div>
             </div>
 
