@@ -1,7 +1,14 @@
 "use client"
+import { randomNumber } from "@/lib/utils";
 import { motion } from "motion/react";
+import { useMemo } from "react";
 
 export function FloatingPaths({ position }: { position: number }) {
+  const rand = randomNumber()
+  const duration = useMemo(
+    () => 20 + rand * 10,
+    [rand]
+  )
   const paths = Array.from({ length: 36 }, (_, i) => ({
     id: i,
     d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${380 - i * 5 * position
@@ -34,7 +41,7 @@ export function FloatingPaths({ position }: { position: number }) {
             strokeOpacity={0.1 + path.id * 0.03}
             strokeWidth={path.width}
             transition={{
-              duration: 20 + Math.random() * 10,
+              duration,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}

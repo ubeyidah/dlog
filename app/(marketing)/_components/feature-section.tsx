@@ -10,7 +10,7 @@ type FeatureType = {
   description: string;
 };
 
-export function FeatureSection() {
+export default function FeatureSection() {
   return (
     <section className="space-y-8" >
       <div className="text-center">
@@ -34,7 +34,7 @@ export function FeatureSection() {
   );
 }
 
-export function FeatureCard({
+function FeatureCard({
   feature,
   className,
   ...props
