@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { ComponentProps, ReactNode } from "react";
 import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
 import Wrapper from "./wrapper";
+import ThemeSwitcher from "./theme-switcher";
 
 type FooterLink = {
   title: string;
@@ -68,6 +69,8 @@ export function Footer() {
             &copy; {new Date().getFullYear()} DLOG, All rights reserved
           </p>
           <p className="text-muted-foreground">Built by <a href="https://github.com/ubeyidah" className="text-primary hover:underline">Ubeyidah</a></p>
+
+          <ThemeSwitcher />
         </AnimatedContainer>
 
         <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
