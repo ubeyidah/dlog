@@ -12,26 +12,26 @@ All development scripts, dependency installations, and package management operat
 
 ### Core Commands
 
-| Action | Command | Description |
-|--------|---------|-------------|
-| **Install** | `bun install` | Install project dependencies |
-| **Dev Server** | `bun run dev` | Start the Next.js development server |
-| **Build** | `bun run build` | Build the application for production |
-| **Start** | `bun run start` | Start the production server |
-| **Lint** | `bun run lint` | Run ESLint to catch errors and enforce rules |
-| **DB Push** | `bun run db:push` | Push schema changes to the database (prototyping) |
-| **DB Migrate** | `bun run db:migrate` | Create and apply migrations (production-ready) |
-| **DB Generate** | `bun run db:generate` | Generate Prisma client artifacts |
-| **DB Studio** | `bun run db:studio` | Open Prisma Studio GUI for data management |
+| Action          | Command               | Description                                       |
+| --------------- | --------------------- | ------------------------------------------------- |
+| **Install**     | `bun install`         | Install project dependencies                      |
+| **Dev Server**  | `bun run dev`         | Start the Next.js development server              |
+| **Build**       | `bun run build`       | Build the application for production              |
+| **Start**       | `bun run start`       | Start the production server                       |
+| **Lint**        | `bun run lint`        | Run ESLint to catch errors and enforce rules      |
+| **DB Push**     | `bun run db:push`     | Push schema changes to the database (prototyping) |
+| **DB Migrate**  | `bun run db:migrate`  | Create and apply migrations (production-ready)    |
+| **DB Generate** | `bun run db:generate` | Generate Prisma client artifacts                  |
+| **DB Studio**   | `bun run db:studio`   | Open Prisma Studio GUI for data management        |
 
-*Note: There are currently no testing commands configured. Do not run `bun test` or look for test files unless instructed to create them.*
+_Note: There are currently no testing commands configured. Do not run `bun test` or look for test files unless instructed to create them._
 
 ## 2. Tech Stack Overview
 
-- **Framework:** Next.js 15+ (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript (Strict Mode)
 - **Styling:** Tailwind CSS + `clsx` + `tailwind-merge`
-- **UI Components:** Shadcn UI (Radix Primitives)
+- **UI Components:** Shadcn UI (Baseui Primitives)
 - **Database:** PostgreSQL (via Prisma ORM)
 - **Authentication:** Better Auth
 - **API/Data Fetching:** TRPC + TanStack Query
@@ -53,7 +53,7 @@ This project uses the Next.js App Router with specific conventions:
 - **Directories:** Always use `kebab-case` (e.g., `components/ui`, `app/api/auth`).
 - **Files:**
   - Components, Hooks, Utilities: `kebab-case` (e.g., `button.tsx`, `use-mobile.tsx`, `auth-client.ts`).
-  - *Exception:* Special Next.js files (`page.tsx`, `layout.tsx`, `route.ts`) follow framework rules.
+  - _Exception:_ Special Next.js files (`page.tsx`, `layout.tsx`, `route.ts`) follow framework rules.
 - **React Components:** PascalCase (e.g., `export function Button() {}`, `export const Header = () => {}`).
 - **Hooks:** camelCase, prefixed with `use` (e.g., `useIsMobile`).
 - **Variables & Functions:** camelCase (e.g., `isLoading`, `handleSubmit`).
@@ -70,6 +70,7 @@ This project uses the Next.js App Router with specific conventions:
 ### Imports & Exports
 
 - **Absolute Imports:** Use the `@/` alias for all internal project imports.
+
   ```tsx
   // ✅ Correct
   import { Button } from "@/components/ui/button";
@@ -78,6 +79,7 @@ This project uses the Next.js App Router with specific conventions:
   // ❌ Incorrect
   import { Button } from "../../components/ui/button";
   ```
+
 - **Import Order:**
   1. Built-in Node.js modules
   2. External dependencies (React, Next.js, third-party libs)
@@ -107,17 +109,20 @@ This project uses the Next.js App Router with specific conventions:
 ## 5. Development Workflows
 
 ### UI Component Development (Shadcn)
+
 - When adding new UI primitives, follow the established pattern in `components/ui`.
 - Utilize `cn()` from `@/lib/utils` for conditional class merging.
 - Use `cva` (class-variance-authority) for managing component variants.
 
 ### Database Changes (Prisma)
+
 1. Modify `prisma/schema.prisma`.
 2. Run `bun run db:generate` to update the client.
 3. Run `bun run db:migrate` (or `db:push` for local proto) to update the DB.
 4. **Never** import Prisma Client directly in Client Components.
 
 ### TRPC & Data Fetching
+
 - Define new procedures in `trpc/routers`.
 - Use the TRPC React hooks (e.g., `trpc.example.hello.useQuery`) in components.
 - Ensure all inputs are validated with Zod.
@@ -132,4 +137,4 @@ This project uses the Next.js App Router with specific conventions:
 
 ## 7. External Rules
 
-*(No specific .cursorrules or Copilot instructions were found at the time of writing. If added, they take precedence over general rules here.)*
+_(No specific .cursorrules or Copilot instructions were found at the time of writing. If added, they take precedence over general rules here.)_
