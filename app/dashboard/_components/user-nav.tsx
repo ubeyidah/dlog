@@ -12,6 +12,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
@@ -22,10 +26,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
-import { Logout01Icon, MoreVerticalIcon, Notification01Icon, RefreshCw, SettingsIcon, UserCircleIcon } from "@hugeicons/core-free-icons"
+import { Check, Logout01Icon, MoreVerticalIcon, Notification01Icon, RefreshCw, SettingsIcon, UserCircleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 
 function UserNavSkeleton() {
   return (
@@ -75,6 +80,7 @@ function UserNavError({ onRetry }: { onRetry: () => void }) {
 export function NavUser() {
   const { data, error, isPending, refetch } = authClient.useSession()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -157,6 +163,23 @@ export function NavUser() {
                   Notifications
                 </DropdownMenuItem>
               </DropdownMenuGroup>
+
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <HugeiconsIcon icon={Notification01Icon} strokeWidth={2} />
+                  Theme
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem className="flex items-center justify-between gap-2" onClick={() => setTheme("light")}>Light {theme == "light" && <HugeiconsIcon icon={Check} />}</DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center justify-between gap-2" onClick={() => setTheme("dark")}>Dark {theme == "dark" && <HugeiconsIcon icon={Check} />}</DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center justify-between gap-2" onClick={() => setTheme("system")}>System {theme == "system" && <HugeiconsIcon icon={Check} />}</DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} variant="destructive">
                 <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
