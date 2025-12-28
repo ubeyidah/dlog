@@ -456,8 +456,8 @@ export const ContributionGraphTotalCount = ({
     <div className={cn("text-muted-foreground", className)} {...props}>
       {labels.totalCount
         ? labels.totalCount
-            .replace("{{count}}", String(totalCount))
-            .replace("{{year}}", String(year))
+          .replace("{{count}}", String(totalCount))
+          .replace("{{year}}", String(year))
         : `${totalCount} activities in ${year}`}
     </div>
   );
@@ -479,7 +479,7 @@ export const ContributionGraphLegend = ({
 
   return (
     <div
-      className={cn("ml-auto flex items-center gap-[3px]", className)}
+      className={cn("ml-auto flex items-center gap-0.75", className)}
       {...props}
     >
       <span className="mr-1 text-muted-foreground">
