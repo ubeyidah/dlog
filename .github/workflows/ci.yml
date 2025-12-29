@@ -55,8 +55,11 @@ jobs:
         env:
           # Skip telemetry during build
           NEXT_TELEMETRY_DISABLED: 1
-          # Dummy env vars for build (not used in build, only runtime)
-          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          # NOTE: These are non-functional dummy values for CI build only.
+          # The actual build process does not use these values - they are only
+          # required to satisfy Next.js environment variable validation.
+          # Real credentials are managed by Vercel for production deployment.
+          DATABASE_URL: postgresql://ci-dummy-user:ci-dummy-pass@localhost:5432/ci-dummy-db
           NEXT_PUBLIC_APP_URL: http://localhost:3000
-          BETTER_AUTH_SECRET: dummy-secret-for-ci-build-only
+          BETTER_AUTH_SECRET: ci-build-dummy-secret-not-for-production-use
           BETTER_AUTH_URL: http://localhost:3000
