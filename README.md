@@ -51,7 +51,6 @@ This project uses GitHub Actions for continuous integration. The following check
 - **Type Checking** - TypeScript compiler checks for type errors
 - **Build** - Verifies the application builds successfully
 - **Security Scanning** - CodeQL analyzes code for security vulnerabilities
-- **Dependency Review** - Checks for vulnerable dependencies in PRs
 
 ## Learn More
 

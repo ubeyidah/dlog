@@ -46,20 +46,7 @@ Analyzes JavaScript/TypeScript code for security vulnerabilities and code qualit
 2. Autobuild the project
 3. Perform analysis and upload results to GitHub Security tab
 
-### 3. Dependency Review (`dependency-review.yml`)
-
-**Triggers:**
-- Pull requests to `main` or `master` branch
-
-**Purpose:**
-Reviews dependency changes in pull requests to identify known security vulnerabilities.
-
-**Configuration:**
-- Fails on moderate or higher severity vulnerabilities
-- Adds summary comments to pull requests
-- Requires `contents: read` and `pull-requests: write` permissions
-
-### 4. PR Labeler (`labeler.yml`)
+### 3. PR Labeler (`labeler.yml`)
 
 **Triggers:**
 - Pull request opened, synchronized, or reopened
@@ -115,9 +102,6 @@ The workflows require the following GitHub Actions permissions:
   - `actions: read`
   - `contents: read`
   - `security-events: write`
-- **dependency-review.yml**:
-  - `contents: read`
-  - `pull-requests: write`
 - **labeler.yml**:
   - `contents: read`
   - `pull-requests: write`
