@@ -21,8 +21,9 @@ jobs:
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
-          # Fail on moderate or higher severity vulnerabilities
-          # Low severity issues are allowed to prevent blocking on minor issues
-          # that may not have immediate security impact
+          # Fail on moderate or higher severity vulnerabilities.
+          # Rationale: Low severity issues typically have minimal security impact
+          # and often lack exploits. Moderate+ issues have known attack vectors.
+          # This balances security with development velocity.
           fail-on-severity: moderate
           comment-summary-in-pr: always
