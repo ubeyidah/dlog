@@ -1,0 +1,40 @@
+# Automatically label PRs based on file changes
+
+# Database related changes
+database:
+  - changed-files:
+    - any-glob-to-any-file: 'prisma/**'
+
+# Frontend/UI changes
+ui:
+  - changed-files:
+    - any-glob-to-any-file: 'components/**'
+    - any-glob-to-any-file: 'app/**/*.tsx'
+
+# Backend/API changes
+api:
+  - changed-files:
+    - any-glob-to-any-file: 'app/api/**'
+    - any-glob-to-any-file: 'trpc/**'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 'package.json'
+    - any-glob-to-any-file: 'bun.lock'
+
+# Configuration
+config:
+  - changed-files:
+    - any-glob-to-any-file: '*.config.*'
+    - any-glob-to-any-file: 'tsconfig.json'
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '*.md'
+
+# CI/CD
+ci-cd:
+  - changed-files:
+    - any-glob-to-any-file: '.github/**'
