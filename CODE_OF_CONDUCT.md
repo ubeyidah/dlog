@@ -60,8 +60,9 @@ This Code of Conduct also applies when an individual is officially representing 
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at:
 
-- **GitHub Issues:** For public concerns, open an issue
-- **Private Report:** Contact repository maintainers directly
+- **GitHub Issues:** For public concerns, [open an issue](https://github.com/ubeyidah/dlog/issues)
+- **Direct Contact:** Reach out to [@ubeyidah](https://github.com/ubeyidah) via GitHub
+- **Email:** Contact the repository maintainer through their GitHub profile
 
 All complaints will be reviewed and investigated promptly and fairly.
 
@@ -105,7 +106,10 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 
 ## Questions?
 
-If you have questions about this Code of Conduct, please open a discussion in the repository.
+If you have questions about this Code of Conduct, please:
+
+- Open a [discussion](https://github.com/ubeyidah/dlog/discussions) in the repository
+- Contact [@ubeyidah](https://github.com/ubeyidah) directly
 
 ---
 
