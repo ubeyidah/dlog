@@ -55,11 +55,10 @@ jobs:
         env:
           # Skip telemetry during build
           NEXT_TELEMETRY_DISABLED: 1
-          # NOTE: These are non-functional dummy values for CI build only.
-          # The actual build process does not use these values - they are only
-          # required to satisfy Next.js environment variable validation.
-          # Real credentials are managed by Vercel for production deployment.
-          DATABASE_URL: postgresql://ci-dummy-user:ci-dummy-pass@localhost:5432/ci-dummy-db
+          # NOTE: These are PLACEHOLDER values for CI build validation ONLY.
+          # These values are NOT functional and should NEVER be used in any environment.
+          # Real credentials are managed securely by Vercel for production deployment.
+          DATABASE_URL: postgresql://CI-PLACEHOLDER:CI-PLACEHOLDER@localhost:5432/CI-PLACEHOLDER-DB
           NEXT_PUBLIC_APP_URL: http://localhost:3000
-          BETTER_AUTH_SECRET: ci-build-dummy-secret-not-for-production-use
+          BETTER_AUTH_SECRET: CI-PLACEHOLDER-SECRET-DO-NOT-USE-IN-PRODUCTION
           BETTER_AUTH_URL: http://localhost:3000

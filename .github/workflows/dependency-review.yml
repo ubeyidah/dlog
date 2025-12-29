@@ -21,5 +21,8 @@ jobs:
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
+          # Fail on moderate or higher severity vulnerabilities
+          # Low severity issues are allowed to prevent blocking on minor issues
+          # that may not have immediate security impact
           fail-on-severity: moderate
           comment-summary-in-pr: always
