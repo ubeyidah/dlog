@@ -1,13 +1,13 @@
 "use client"
-import { Button } from "@/components/ui/button"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { CalendarIcon, Chart02FreeIcons, GlobalSearchIcon, GooglePhotosIcon, Home, Plus, SettingsIcon, TaskDaily01Icon } from "@hugeicons/core-free-icons"
+import { CalendarIcon, Chart02FreeIcons, GlobalSearchIcon, GooglePhotosIcon, Home, SettingsIcon, TaskDaily01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { NavUser } from "./user-nav"
+import QuickLog from "@/components/shared/qucik-log"
 
 
 const links = [
@@ -72,9 +72,7 @@ const AppSidebar = () => {
               className="flex w-fit items-center">
               <Image src={"/logo.svg"} width={20} height={10} alt='dlog logo' className='h-8 w-full' />
             </Link>
-            <Button size={"icon"} variant={"outline"} className={"rounded-2xl"}>
-              <HugeiconsIcon icon={Plus} className="size-4" strokeWidth={2} />
-            </Button>
+            <QuickLog />
           </> : <Link
             href="/"
             aria-label="home"
