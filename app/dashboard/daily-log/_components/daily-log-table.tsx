@@ -130,11 +130,12 @@ const columns: ColumnDef<DailyLog>[] = [
     header: "Action",
     cell: () => (
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger render={
           <Button variant="ghost" size="sm">
             <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
           </Button>
-        </DropdownMenuTrigger>
+        } />
+
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
             <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
