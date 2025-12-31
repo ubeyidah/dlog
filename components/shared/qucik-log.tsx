@@ -17,8 +17,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useMutation } from "@tanstack/react-query"
+import { useTRPC } from "@/trpc/client"
+import { LOG_MOOD } from "@/lib/generated/prisma/enums"
 
 const QuickLog = () => {
+  const trpc = useTRPC()
+  const { mutate, isPending, error } = useMutation(trpc.daily_log.create.mutationOptions())
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [mood, setMood] = useState("")
@@ -33,7 +38,7 @@ const QuickLog = () => {
 
   const handleSave = () => {
     console.log({ title, content, mood, tags })
-    // TODO: Implement save logic, e.g., TRPC mutation
+    mutate({ title, content, tags, mood: mood as LOG_MOOD })
   }
 
   const formattedDate = dayjs().format("dddd, MMMM D, YYYY")
@@ -88,14 +93,10 @@ const QuickLog = () => {
               </label>
               <Select value={mood} onValueChange={(value) => setMood(value || "")}>
                 <SelectTrigger className={"w-full"}>
-                  <SelectValue>Select Mood</SelectValue>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="happy">Happy 😊</SelectItem>
-                  <SelectItem value="neutral">Neutral 😐</SelectItem>
-                  <SelectItem value="sad">Sad 😢</SelectItem>
-                  <SelectItem value="excited">Excited 🤩</SelectItem>
-                  <SelectItem value="tired">Tired 😴</SelectItem>
+                  {Object.values(LOG_MOOD).map((mood) => <SelectItem key={mood} value={mood} className="capitalize">{mood.toLowerCase()}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -113,12 +114,14 @@ const QuickLog = () => {
               </div>
             )}
           </div>
-
+          {error && <div className="p-2 w-full bg-red-800/20 text-red-600 rounded-lg">{error.shape?.message || error.message}</div>}
           <DialogFooter>
             <DialogClose>
               <Button variant="outline" className={"w-full"}>Cancel</Button>
             </DialogClose>
-            <Button onClick={handleSave}>Capture Today</Button>
+            <Button onClick={handleSave}>{
+              isPending ? "Saving..." : "Capture Today"
+            }</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
