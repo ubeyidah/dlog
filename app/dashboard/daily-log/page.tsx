@@ -132,11 +132,14 @@ const Page = async () => {
       <div className="mt-2">
         <DailyLogTable data={dummyLogs} />
         <div className="mt-4 w-fit ml-auto">
-          <DailyLogPagination
-            totalPages={20}
-            defaultPage={4}
-            defaultLimit={5}
-          />
+
+          <Suspense fallback={<div className="p-4">Loading pagination...</div>}>
+            <DailyLogPagination
+              totalPages={20}
+              defaultPage={4}
+              defaultLimit={5}
+            />
+          </Suspense>
         </div>
       </div>
     </div>
