@@ -35,7 +35,7 @@ const FilterControls = () => {
   }
 
   return (
-    <div className="space-y-3 py-4 gap-2 md:flex md:justify-between md:items-center md:space-y-0">
+    <div className="space-y-3 py-4 mt-2 gap-2 md:flex md:justify-between md:items-center md:space-y-0">
       <div className="md:max-w-md w-full md:flex-1">
         <InputGroup>
           <InputGroupAddon>
