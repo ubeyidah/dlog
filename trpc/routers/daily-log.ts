@@ -12,6 +12,7 @@ export const dailyLogRouter = createTRPCRouter({
       const today = dayjs().startOf('day').toDate()
       const isAreadyLogged = await prisma.dailyLog.findFirst({
         where: {
+          userId: ctx.userId,
           createdAt: {
             gte: today
           }

@@ -50,7 +50,6 @@ const QuickLog = () => {
   const trpc = useTRPC()
   const form = useForm<CreateDailyLogInput>({
     resolver: zodResolver(createDailyLogSchema),
-    mode: "onBlur",
     defaultValues: {
       title: "",
       content: "",
