@@ -3,6 +3,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Search } from "@hugeicons/core-free-icons";
+import QuickLog from "./qucik-log";
+import { Button } from "../ui/button";
 
 function SiteHeader() {
   return (
@@ -17,13 +19,21 @@ function SiteHeader() {
           <h1 className="text-base font-medium">Documents</h1>
         </div>
         <div className="flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-2">
+            <QuickLog />
+            <Button variant="outline" className="rounded-xl" size={"icon"}>
 
-          <InputGroup>
-            <InputGroupInput placeholder="Search..." />
-            <InputGroupAddon>
               <HugeiconsIcon icon={Search} />
-            </InputGroupAddon>
-          </InputGroup>
+            </Button>
+          </div>
+          <div className="md:flex hidden">
+            <InputGroup>
+              <InputGroupInput placeholder="Search..." />
+              <InputGroupAddon>
+                <HugeiconsIcon icon={Search} />
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
         </div>
       </div>
     </header>

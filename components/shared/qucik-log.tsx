@@ -106,7 +106,7 @@ const QuickLog = () => {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger render={
-          <Button size={"icon"} variant={"outline"} className={"rounded-2xl"}>
+          <Button size={"icon"} variant={"outline"} className={"rounded-xl"}>
             <HugeiconsIcon icon={Plus} className="size-4" strokeWidth={2} />
           </Button>
         } />

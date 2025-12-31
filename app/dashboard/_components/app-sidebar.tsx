@@ -72,7 +72,9 @@ const AppSidebar = () => {
               className="flex w-fit items-center">
               <Image src={"/logo.svg"} width={20} height={10} alt='dlog logo' className='h-8 w-full' />
             </Link>
-            <QuickLog />
+            <div className="max-md:hidden">
+              <QuickLog />
+            </div>
           </> : <Link
             href="/"
             aria-label="home"
