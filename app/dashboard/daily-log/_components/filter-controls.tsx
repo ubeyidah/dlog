@@ -75,14 +75,26 @@ const FilterControls = () => {
           <PopoverTrigger render={
             <Button variant="outline" className="w-full md:w-64 justify-start">
               <HugeiconsIcon icon={Calendar03Icon} className="h-4 w-4 mr-2" />
-              {dateRange?.from ? (
-                dateRange.to ? (
-                  `${format(dateRange.from, 'LLL dd')} - ${format(dateRange.to, 'LLL dd')}`
+              <span className="flex-1 text-left">
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    `${format(dateRange.from, 'LLL dd')} - ${format(dateRange.to, 'LLL dd')}`
+                  ) : (
+                    format(dateRange.from, 'LLL dd, y')
+                  )
                 ) : (
-                  format(dateRange.from, 'LLL dd, y')
-                )
-              ) : (
-                'Select date range'
+                  'Select date range'
+                )}
+              </span>
+              {dateRange?.from && (
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDateSelect(undefined)
+                  }}
+                />
               )}
             </Button>
           } />
