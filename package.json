@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
+    "@hookform/resolvers": "^5.2.2",
     "@hugeicons/core-free-icons": "^3.1.0",
     "@hugeicons/react": "^1.1.4",
     "@prisma/adapter-pg": "^7.2.0",
@@ -39,6 +40,7 @@
     "next-themes": "^0.4.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hook-form": "^7.69.0",
     "react-use-measure": "^2.1.7",
     "recharts": "2.15.4",
     "resend": "^6.6.0",
