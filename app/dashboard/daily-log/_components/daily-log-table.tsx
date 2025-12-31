@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -28,6 +36,7 @@ import {
   ViewIcon,
   Edit02Icon,
   Delete01Icon,
+  CalendarIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import dayjs from "dayjs"
@@ -194,8 +203,21 @@ export function DailyLogTable({ data }: DailyLogTableProps) {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              <TableCell colSpan={columns.length} className="h-24 py-16 text-center">
+                <Empty className="border-none bg-transparent p-0">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <HugeiconsIcon icon={CalendarIcon} className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>No Daily Logs Yet</EmptyTitle>
+                    <EmptyDescription>
+                      Start your journaling journey by creating your first daily log entry.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button>Create First Log</Button>
+                  </EmptyContent>
+                </Empty>
               </TableCell>
             </TableRow>
           )}
