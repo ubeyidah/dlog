@@ -3,10 +3,12 @@ import { Book01Icon, FireIcon, CalendarIcon, Smile } from "@hugeicons/core-free-
 import { StatCard, Stat } from "./_components/stat-card";
 import { FilterControls } from "./_components/filter-controls";
 import { DailyLogTable, DailyLog } from "./_components/daily-log-table";
+import DailyLogPagination from "./_components/daily-log-pagination";
 import dayjs from "dayjs";
 import { LOG_MOODS } from "@/lib/validation/daily-log.schema";
 
-const Page = () => {
+const Page = async () => {
+
   const stats: Stat[] = [
     {
       id: "total-memories",
@@ -116,6 +118,7 @@ const Page = () => {
     },
   ];
 
+
   return (
     <div>
       <div className="grid py-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -128,6 +131,13 @@ const Page = () => {
       </Suspense>
       <div className="mt-2">
         <DailyLogTable data={dummyLogs} />
+        <div className="mt-4 w-fit ml-auto">
+          <DailyLogPagination
+            totalPages={20}
+            defaultPage={4}
+            defaultLimit={5}
+          />
+        </div>
       </div>
     </div>
   );
