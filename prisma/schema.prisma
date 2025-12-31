@@ -17,6 +17,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  dailyLog      DailyLog[]
 
   @@unique([email])
   @@map("user")
@@ -68,4 +69,38 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model DailyLog {
+  id      String   @id @default(cuid())
+  title   String
+  content String
+  mood    LOG_MOOD
+  tags    String[]
+  userId  String
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum LOG_MOOD {
+  PRODUCTIVE
+  INSPIRED
+  GRATEFUL
+  ENERGIZED
+  PEACEFUL
+  NEUTRAL
+  REFLECTIVE
+  CURIOUS
+  STRUGGLING
+  TIRED
+  OVERWHELMED
+  DISTRACTED
+  DOUBTFUL
+  SPIRITUAL
+  PATIENT
 }
