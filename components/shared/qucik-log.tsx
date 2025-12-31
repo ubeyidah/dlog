@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import dayjs from "dayjs"
-import { Plus } from "@hugeicons/core-free-icons"
+import { AlertCircle, Plus } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -25,6 +25,7 @@ import { CreateDailyLogInput, createDailyLogSchema, LOG_MOODS } from "@/lib/vali
 import { Field, FieldError, FieldLabel } from "../ui/field"
 import { Spinner } from "../ui/spinner"
 import { toast } from "sonner"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 
 
 const moodEmojis: Record<string, string> = {
@@ -49,6 +50,7 @@ const QuickLog = () => {
   const trpc = useTRPC()
   const form = useForm<CreateDailyLogInput>({
     resolver: zodResolver(createDailyLogSchema),
+    mode: "onBlur",
     defaultValues: {
       title: "",
       content: "",
@@ -150,9 +152,9 @@ const QuickLog = () => {
                 control={form.control}
                 render={({ field, fieldState }) => <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="mood">Mood</FieldLabel>
-                  <Select {...field} value={field.value} onValueChange={(value) => field.onChange(value)} aria-invalid={fieldState.invalid}>
-                    <SelectTrigger className={"w-full"}>
-                      <SelectValue>
+                  <Select value={field.value ?? ""} id="mood" onValueChange={(value) => field.onChange(value)} aria-invalid={fieldState.invalid}>
+                    <SelectTrigger className={"w-full"} onBlur={field.onBlur}>
+                      <SelectValue onBlur={field.onBlur} >
                         {field.value ? `${moodEmojis[field.value]} ${field.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}` : 'Select mood'}
                       </SelectValue>
                     </SelectTrigger>
@@ -168,7 +170,7 @@ const QuickLog = () => {
 
               {tags.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium mb-1">Extracted Tags</label>
+                  <label className="block text-sm font-medium mb-1">Tags</label>
                   <div className="flex flex-wrap gap-1">
                     {tags.map((tag, index) => (
                       <span key={index} className="bg-primary/5 text-primary px-2 py-1 rounded-lg text-xs">
@@ -179,7 +181,12 @@ const QuickLog = () => {
                 </div>
               )}
             </div>
-            {error && <div className="p-2 w-full bg-red-800/20 text-red-600 rounded-lg">{error.shape?.message || error.message}</div>}
+            {error && (
+              <Alert variant="destructive">
+                <HugeiconsIcon icon={AlertCircle} />
+                <AlertTitle className="font-normal">{error.shape?.message || error.message}</AlertTitle>
+              </Alert>
+            )}
             <DialogFooter>
               <DialogClose
                 render={<Button variant="outline" type="button">Cancel</Button>}
