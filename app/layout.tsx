@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/provider/theme-provider";
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -39,7 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TRPCReactProvider>
-            {children}
+            <NuqsAdapter >
+              {children}
+            </NuqsAdapter>
           </TRPCReactProvider>
           <Toaster position="bottom-center" />
         </ThemeProvider>

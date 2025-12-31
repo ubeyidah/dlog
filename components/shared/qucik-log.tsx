@@ -22,29 +22,14 @@ import { useTRPC } from "@/trpc/client"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateDailyLogInput, createDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema"
+import { moodEmojis } from "@/lib/moods"
 import { Field, FieldError, FieldLabel } from "../ui/field"
 import { Spinner } from "../ui/spinner"
 import { toast } from "sonner"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 
 
-const moodEmojis: Record<string, string> = {
-  PRODUCTIVE: '🚀',
-  INSPIRED: '💡',
-  GRATEFUL: '🙏',
-  ENERGIZED: '⚡',
-  PEACEFUL: '🕊️',
-  NEUTRAL: '😐',
-  REFLECTIVE: '🤔',
-  CURIOUS: '👀',
-  STRUGGLING: '😰',
-  TIRED: '😴',
-  OVERWHELMED: '😵',
-  DISTRACTED: '🤯',
-  DOUBTFUL: '😟',
-  SPIRITUAL: '✨',
-  PATIENT: '🧘',
-}
+
 const QuickLog = () => {
   const [open, setOpen] = useState(false)
   const trpc = useTRPC()
