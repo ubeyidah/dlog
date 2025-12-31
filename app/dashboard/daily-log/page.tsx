@@ -1,10 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Suspense } from "react";
 import { Book01Icon, FireIcon, CalendarIcon, Smile } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Progress } from "@/components/ui/progress";
+import { StatCard, Stat } from "./_components/stat-card";
+import { FilterControls } from "./_components/filter-controls";
 
 const Page = () => {
-  const stats = [
+  const stats: Stat[] = [
     {
       id: "total-memories",
       icon: Book01Icon,
@@ -44,24 +44,12 @@ const Page = () => {
     <div>
       <div className="grid py-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.id} className="relative group">
-            <CardHeader>
-              <div className="w-24 h-24 rounded-lg bg-primary/10 group-hover:rotate-6 group-hover:-bottom-4 transition-transform duration-300 absolute rotate-12 -right-6 -bottom-10" />
-              <div className="flex items-center gap-2">
-                {stat.icon && <HugeiconsIcon icon={stat.icon} strokeWidth={2} className={`h-5 w-5 ${stat.color}`} />}
-                <CardTitle className="text-sm uppercase font-bold text-foreground/60">{stat.label}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stat.value}</p>
-              <p className="text-xs text-muted-foreground mt-2 mb-1">{stat.description}</p>
-              {stat.progress && (
-                <Progress value={stat.progress} className={"rounded-full"} />
-              )}
-            </CardContent>
-          </Card>
+          <StatCard key={stat.id} stat={stat} />
         ))}
       </div>
+      <Suspense fallback={<div className="p-4">Loading filters...</div>}>
+        <FilterControls />
+      </Suspense>
     </div>
   );
 };
