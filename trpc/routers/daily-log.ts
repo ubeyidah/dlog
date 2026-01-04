@@ -2,8 +2,12 @@ import { createDailyLogSchema } from "@/lib/validation/daily-log.schema";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
-import { TRPCError } from "@trpc/server";
 
+import z from "zod";
+
+const getAllInputSchema = z.object({
+  search: z.string().optional(),
+});
 
 export const dailyLogRouter = createTRPCRouter({
   create: protectedProcedure
@@ -26,11 +30,22 @@ export const dailyLogRouter = createTRPCRouter({
       await prisma.dailyLog.create({ data: { ...input, userId: ctx.userId } })
       return { message: "Daily log created successfully" }
     }),
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    const logs = await prisma.dailyLog.findMany({
-      where: { userId: ctx.userId },
-      orderBy: { createdAt: 'desc' },
+  getAll: protectedProcedure
+    .input(getAllInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { search } = input;
+      const logs = await prisma.dailyLog.findMany({
+        where: {
+          userId: ctx.userId,
+          ...(search && {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { content: { contains: search, mode: 'insensitive' } },
+            ],
+          }),
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return logs;
     })
-    return logs
-  })
 })
