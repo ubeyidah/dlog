@@ -6,10 +6,13 @@ import { DailyLogTable } from "./_components/daily-log-table";
 import DailyLogPagination from "./_components/daily-log-pagination";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { createLoader, parseAsString } from "nuqs/server";
+import { createLoader, parseAsString, parseAsIsoDateTime } from "nuqs/server";
 
 const searchParamsParsers = {
   search: parseAsString.withDefault(''),
+  mood: parseAsString,
+  startDate: parseAsIsoDateTime.withDefault(null),
+  endDate: parseAsIsoDateTime.withDefault(null),
 };
 
 const loadSearchParams = createLoader(searchParamsParsers);
@@ -20,8 +23,8 @@ type PageProps = {
 
 const Page = async ({ searchParams }: PageProps) => {
   const queryClient = getQueryClient()
-  const { search } = await loadSearchParams(searchParams)
-  void queryClient.prefetchQuery(trpc.daily_log.getAll.queryOptions({ search }))
+  const { search, mood, startDate, endDate } = await loadSearchParams(searchParams)
+  void queryClient.prefetchQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate, endDate }))
 
   const stats: Stat[] = [
     {

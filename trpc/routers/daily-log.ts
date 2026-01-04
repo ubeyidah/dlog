@@ -1,4 +1,4 @@
-import { createDailyLogSchema } from "@/lib/validation/daily-log.schema";
+import { createDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
@@ -7,6 +7,9 @@ import z from "zod";
 
 const getAllInputSchema = z.object({
   search: z.string().optional(),
+  mood: z.enum(LOG_MOODS).nullable().optional(),
+  startDate: z.string().nullable().optional().transform((val) => val ? new Date(val) : null),
+  endDate: z.string().nullable().optional().transform((val) => val ? new Date(val) : null),
 });
 
 export const dailyLogRouter = createTRPCRouter({
@@ -33,7 +36,7 @@ export const dailyLogRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(getAllInputSchema)
     .query(async ({ ctx, input }) => {
-      const { search } = input;
+      const { search, mood, startDate, endDate } = input;
       const logs = await prisma.dailyLog.findMany({
         where: {
           userId: ctx.userId,
@@ -43,6 +46,13 @@ export const dailyLogRouter = createTRPCRouter({
               { content: { contains: search, mode: 'insensitive' } },
             ],
           }),
+          ...(mood && { mood }),
+          ...(startDate || endDate ? {
+            createdAt: {
+              ...(startDate && { gte: dayjs(startDate).startOf('day').toDate() }),
+              ...(endDate && { lte: dayjs(endDate).endOf('day').toDate() })
+            },
+          } : {}),
         },
         orderBy: { createdAt: 'desc' },
       });

@@ -44,7 +44,7 @@ import { moodEmojis } from "@/lib/moods"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/trpc/client"
 import { DailyLog } from "@/lib/types"
-import { useQueryState, parseAsString } from 'nuqs'
+import { useQueryStates, parseAsString, parseAsIsoDateTime } from 'nuqs'
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
@@ -154,8 +154,13 @@ const columns: ColumnDef<DailyLog>[] = [
 export function DailyLogTable() {
   "use no memo"
   const trpc = useTRPC()
-  const [search] = useQueryState('search', parseAsString.withDefault(''))
-  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search }));
+  const [{ search, mood, startDate, endDate }] = useQueryStates({
+    search: parseAsString.withDefault(''),
+    mood: parseAsString,
+    startDate: parseAsIsoDateTime,
+    endDate: parseAsIsoDateTime,
+  })
+  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate, endDate }));
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
