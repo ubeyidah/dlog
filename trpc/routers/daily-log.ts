@@ -20,10 +20,17 @@ export const dailyLogRouter = createTRPCRouter({
       })
 
       if (isAreadyLogged) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "You have already created a daily log today" })
+        // throw new TRPCError({ code: "BAD_REQUEST", message: "You have already created a daily log today" })
       }
 
       await prisma.dailyLog.create({ data: { ...input, userId: ctx.userId } })
       return { message: "Daily log created successfully" }
+    }),
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const logs = await prisma.dailyLog.findMany({
+      where: { userId: ctx.userId },
+      orderBy: { createdAt: 'desc' },
     })
+    return logs
+  })
 })

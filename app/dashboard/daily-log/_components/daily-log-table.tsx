@@ -41,6 +41,9 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import dayjs from "dayjs"
 import { moodEmojis } from "@/lib/moods"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { useTRPC } from "@/trpc/client"
+import { DailyLog } from "@/lib/types"
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
@@ -59,15 +62,6 @@ const moodColors: Record<string, string> = {
   DOUBTFUL: 'bg-cyan-600/5 text-cyan-700',
   SPIRITUAL: 'bg-violet-600/5 text-violet-700',
   PATIENT: 'bg-emerald-600/5 text-emerald-700',
-}
-
-// Define the data type
-export type DailyLog = {
-  id: string
-  createdAt: Date
-  mood: string
-  title: string
-  tags: string[]
 }
 
 // Column definitions
@@ -155,16 +149,15 @@ const columns: ColumnDef<DailyLog>[] = [
   },
 ]
 
-interface DailyLogTableProps {
-  data: DailyLog[]
-}
 
-export function DailyLogTable({ data }: DailyLogTableProps) {
+export function DailyLogTable() {
   "use no memo"
+  const trpc = useTRPC()
+  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions());
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -203,7 +196,7 @@ export function DailyLogTable({ data }: DailyLogTableProps) {
               </TableRow>
             ))
           ) : (
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableCell colSpan={columns.length} className="h-24 py-16 text-center">
                 <Empty className="border-none bg-transparent p-0">
                   <EmptyHeader>
