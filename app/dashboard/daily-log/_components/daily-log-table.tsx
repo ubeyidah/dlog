@@ -37,6 +37,7 @@ import {
   Edit02Icon,
   Delete01Icon,
   CalendarIcon,
+  Search01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import dayjs from "dayjs"
@@ -160,7 +161,11 @@ export function DailyLogTable() {
     startDate: parseAsIsoDateTime,
     endDate: parseAsIsoDateTime,
   })
-  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate, endDate }));
+  const serializedStartDate = startDate ? startDate.toISOString() : null;
+  const serializedEndDate = endDate ? endDate.toISOString() : null;
+  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate: serializedStartDate, endDate: serializedEndDate }));
+
+  const hasFilters = !!(search || mood || startDate || endDate);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -208,16 +213,20 @@ export function DailyLogTable() {
                 <Empty className="border-none bg-transparent p-0">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={CalendarIcon} className="h-6 w-6" />
+                      <HugeiconsIcon icon={hasFilters ? Search01Icon : CalendarIcon} className="h-6 w-6" />
                     </EmptyMedia>
-                    <EmptyTitle>No Daily Logs Yet</EmptyTitle>
+                    <EmptyTitle>{hasFilters ? "No results found" : "No Daily Logs Yet"}</EmptyTitle>
                     <EmptyDescription>
-                      Start your journaling journey by creating your first daily log entry.
+                      {hasFilters
+                        ? "Try adjusting your search filters or clearing them to see more results."
+                        : "Start your journaling journey by creating your first daily log entry."}
                     </EmptyDescription>
                   </EmptyHeader>
-                  <EmptyContent>
-                    <Button>Create First Log</Button>
-                  </EmptyContent>
+                  {!hasFilters && (
+                    <EmptyContent>
+                      <Button>Create First Log</Button>
+                    </EmptyContent>
+                  )}
                 </Empty>
               </TableCell>
             </TableRow>

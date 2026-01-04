@@ -1,13 +1,15 @@
-import { createDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema";
+import { createDailyLogSchema } from "@/lib/validation/daily-log.schema";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
+import { LOG_MOOD } from "@/lib/generated/prisma/enums";
 
 import z from "zod";
+import { TRPCError } from "@trpc/server";
 
 const getAllInputSchema = z.object({
   search: z.string().optional(),
-  mood: z.enum(LOG_MOODS).nullable().optional(),
+  mood: z.string().nullable().optional(),
   startDate: z.string().nullable().optional().transform((val) => val ? new Date(val) : null),
   endDate: z.string().nullable().optional().transform((val) => val ? new Date(val) : null),
 });
@@ -46,7 +48,7 @@ export const dailyLogRouter = createTRPCRouter({
               { content: { contains: search, mode: 'insensitive' } },
             ],
           }),
-          ...(mood && { mood }),
+          ...(mood && { mood: mood as LOG_MOOD }),
           ...(startDate || endDate ? {
             createdAt: {
               ...(startDate && { gte: dayjs(startDate).startOf('day').toDate() }),

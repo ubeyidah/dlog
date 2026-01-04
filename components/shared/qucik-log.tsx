@@ -48,7 +48,7 @@ const QuickLog = () => {
       toast.success("Daily log created successfully!")
       form.reset()
       setOpen(false)
-      queryClient.invalidateQueries(trpc.daily_log.getAll.queryOptions())
+      queryClient.invalidateQueries(trpc.daily_log.getAll.queryOptions({}))
     }
   }))
 
