@@ -2,12 +2,42 @@ import { Suspense } from "react";
 import { Book01Icon, FireIcon, CalendarIcon, Smile } from "@hugeicons/core-free-icons";
 import { StatCard, Stat } from "./_components/stat-card";
 import { FilterControls } from "./_components/filter-controls";
-import { DailyLogTable, DailyLog } from "./_components/daily-log-table";
+import { DailyLogTable } from "./_components/daily-log-table";
+import { DailyLogTableSkeleton } from "./_components/daily-log-table-skeleton";
 import DailyLogPagination from "./_components/daily-log-pagination";
-import dayjs from "dayjs";
-import { LOG_MOODS } from "@/lib/validation/daily-log.schema";
+import { getQueryClient, trpc } from "@/trpc/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createLoader, parseAsString, parseAsIsoDateTime } from "nuqs/server";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "@/components/shared/error-boundary-fallback";
 
-const Page = async () => {
+const searchParamsParsers = {
+  search: parseAsString.withDefault(''),
+  mood: parseAsString,
+  startDate: parseAsIsoDateTime,
+  endDate: parseAsIsoDateTime,
+};
+
+const loadSearchParams = createLoader(searchParamsParsers);
+
+type PageProps = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+const Page = async ({ searchParams }: PageProps) => {
+  const queryClient = getQueryClient()
+  const { search, mood, startDate, endDate } = await loadSearchParams(searchParams)
+
+  // Serialize dates for TRPC input
+  const serializedStartDate = startDate ? startDate.toISOString() : null;
+  const serializedEndDate = endDate ? endDate.toISOString() : null;
+
+  void queryClient.prefetchQuery(trpc.daily_log.getAll.queryOptions({
+    search,
+    mood,
+    startDate: serializedStartDate,
+    endDate: serializedEndDate
+  }))
 
   const stats: Stat[] = [
     {
@@ -45,79 +75,6 @@ const Page = async () => {
     },
   ];
 
-  const dummyLogs: DailyLog[] = [
-    {
-      id: '1',
-      createdAt: dayjs().subtract(1, 'day').toDate(),
-      mood: LOG_MOODS[0],
-      title: 'Fixed auth bug in dLog',
-      tags: ['#nextjs', '#auth'],
-    },
-    {
-      id: '2',
-      createdAt: dayjs().subtract(2, 'days').toDate(),
-      mood: LOG_MOODS[1],
-      title: 'Learned about React Server Components and how they work with Next.js App Router',
-      tags: ['#react', '#nextjs'],
-    },
-    {
-      id: '3',
-      createdAt: dayjs().subtract(3, 'days').toDate(),
-      mood: LOG_MOODS[2],
-      title: 'Grateful for the support from the community',
-      tags: ['#community', '#gratitude'],
-    },
-    {
-      id: '4',
-      createdAt: dayjs().subtract(4, 'days').toDate(),
-      mood: LOG_MOODS[3],
-      title: 'Energized after morning workout',
-      tags: ['#fitness', '#health'],
-    },
-    {
-      id: '5',
-      createdAt: dayjs().subtract(5, 'days').toDate(),
-      mood: LOG_MOODS[4],
-      title: 'Peaceful meditation session',
-      tags: ['#mindfulness', '#meditation'],
-    },
-    {
-      id: '6',
-      createdAt: dayjs().subtract(6, 'days').toDate(),
-      mood: LOG_MOODS[5],
-      title: 'Neutral day, got some work done',
-      tags: ['#work', '#productivity'],
-    },
-    {
-      id: '7',
-      createdAt: dayjs().subtract(7, 'days').toDate(),
-      mood: LOG_MOODS[6],
-      title: 'Reflective thoughts on life goals',
-      tags: ['#reflection', '#goals'],
-    },
-    {
-      id: '8',
-      createdAt: dayjs().subtract(8, 'days').toDate(),
-      mood: LOG_MOODS[7],
-      title: 'Curious about AI advancements',
-      tags: ['#ai', '#technology'],
-    },
-    {
-      id: '9',
-      createdAt: dayjs().subtract(9, 'days').toDate(),
-      mood: LOG_MOODS[8],
-      title: 'Struggling with time management',
-      tags: ['#time', '#struggle'],
-    },
-    {
-      id: '10',
-      createdAt: dayjs().subtract(10, 'days').toDate(),
-      mood: LOG_MOODS[9],
-      title: 'Tired after long coding session',
-      tags: ['#coding', '#tired'],
-    },
-  ];
-
 
   return (
     <div>
@@ -130,17 +87,20 @@ const Page = async () => {
         <FilterControls />
       </Suspense>
       <div className="mt-2">
-        <DailyLogTable data={dummyLogs} />
-        <div className="mt-4 w-fit ml-auto">
-
-          <Suspense fallback={<div className="p-4">Loading pagination...</div>}>
-            <DailyLogPagination
-              totalPages={20}
-              defaultPage={4}
-              defaultLimit={5}
-            />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <Suspense fallback={<DailyLogTableSkeleton />}>
+             <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <DailyLogTable />
+              <div className="mt-4 w-fit ml-auto">
+                <DailyLogPagination
+                  totalPages={20}
+                  defaultPage={4}
+                  defaultLimit={5}
+                />
+              </div>
+            </ErrorBoundary>
           </Suspense>
-        </div>
+        </HydrationBoundary>
       </div>
     </div>
   );

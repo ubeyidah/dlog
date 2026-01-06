@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTRPC } from "@/trpc/client"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,11 +42,13 @@ const QuickLog = () => {
       tags: [],
     }
   })
+  const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation(trpc.daily_log.create.mutationOptions({
     onSuccess: () => {
       toast.success("Daily log created successfully!")
       form.reset()
       setOpen(false)
+      queryClient.invalidateQueries(trpc.daily_log.getAll.queryOptions({}))
     }
   }))
 

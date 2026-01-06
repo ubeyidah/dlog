@@ -37,10 +37,15 @@ import {
   Edit02Icon,
   Delete01Icon,
   CalendarIcon,
+  Search01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import dayjs from "dayjs"
 import { moodEmojis } from "@/lib/moods"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { useTRPC } from "@/trpc/client"
+import { DailyLog } from "@/lib/types"
+import { useQueryStates, parseAsString, parseAsIsoDateTime } from 'nuqs'
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
@@ -59,15 +64,6 @@ const moodColors: Record<string, string> = {
   DOUBTFUL: 'bg-cyan-600/5 text-cyan-700',
   SPIRITUAL: 'bg-violet-600/5 text-violet-700',
   PATIENT: 'bg-emerald-600/5 text-emerald-700',
-}
-
-// Define the data type
-export type DailyLog = {
-  id: string
-  createdAt: Date
-  mood: string
-  title: string
-  tags: string[]
 }
 
 // Column definitions
@@ -155,16 +151,25 @@ const columns: ColumnDef<DailyLog>[] = [
   },
 ]
 
-interface DailyLogTableProps {
-  data: DailyLog[]
-}
 
-export function DailyLogTable({ data }: DailyLogTableProps) {
+export function DailyLogTable() {
   "use no memo"
+  const trpc = useTRPC()
+  const [{ search, mood, startDate, endDate }] = useQueryStates({
+    search: parseAsString.withDefault(''),
+    mood: parseAsString,
+    startDate: parseAsIsoDateTime,
+    endDate: parseAsIsoDateTime,
+  })
+  const serializedStartDate = startDate ? startDate.toISOString() : null;
+  const serializedEndDate = endDate ? endDate.toISOString() : null;
+  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate: serializedStartDate, endDate: serializedEndDate }));
+
+  const hasFilters = !!(search || mood || startDate || endDate);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -203,21 +208,25 @@ export function DailyLogTable({ data }: DailyLogTableProps) {
               </TableRow>
             ))
           ) : (
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableCell colSpan={columns.length} className="h-24 py-16 text-center">
                 <Empty className="border-none bg-transparent p-0">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={CalendarIcon} className="h-6 w-6" />
+                      <HugeiconsIcon icon={hasFilters ? Search01Icon : CalendarIcon} className="h-6 w-6" />
                     </EmptyMedia>
-                    <EmptyTitle>No Daily Logs Yet</EmptyTitle>
+                    <EmptyTitle>{hasFilters ? "No results found" : "No Daily Logs Yet"}</EmptyTitle>
                     <EmptyDescription>
-                      Start your journaling journey by creating your first daily log entry.
+                      {hasFilters
+                        ? "Try adjusting your search filters or clearing them to see more results."
+                        : "Start your journaling journey by creating your first daily log entry."}
                     </EmptyDescription>
                   </EmptyHeader>
-                  <EmptyContent>
-                    <Button>Create First Log</Button>
-                  </EmptyContent>
+                  {!hasFilters && (
+                    <EmptyContent>
+                      <Button>Create First Log</Button>
+                    </EmptyContent>
+                  )}
                 </Empty>
               </TableCell>
             </TableRow>
