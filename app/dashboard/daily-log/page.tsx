@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { Book01Icon, FireIcon, CalendarIcon, Smile } from "@hugeicons/core-free-icons";
-import { StatCard, Stat } from "./_components/stat-card";
 import { FilterControls } from "./_components/filter-controls";
 import { DailyLogTable } from "./_components/daily-log-table";
 import { DailyLogTableSkeleton } from "./_components/daily-log-table-skeleton";
@@ -10,9 +8,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createLoader, parseAsString, parseAsIsoDateTime } from "nuqs/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/components/shared/error-boundary-fallback";
+import LogStats from "./_components/log-stats";
 
 const searchParamsParsers = {
-  search: parseAsString.withDefault(''),
+  search: parseAsString.withDefault(""),
   mood: parseAsString,
   startDate: parseAsIsoDateTime,
   endDate: parseAsIsoDateTime,
@@ -21,67 +20,31 @@ const searchParamsParsers = {
 const loadSearchParams = createLoader(searchParamsParsers);
 
 type PageProps = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
 const Page = async ({ searchParams }: PageProps) => {
-  const queryClient = getQueryClient()
-  const { search, mood, startDate, endDate } = await loadSearchParams(searchParams)
+  const queryClient = getQueryClient();
+  const { search, mood, startDate, endDate } =
+    await loadSearchParams(searchParams);
 
   // Serialize dates for TRPC input
   const serializedStartDate = startDate ? startDate.toISOString() : null;
   const serializedEndDate = endDate ? endDate.toISOString() : null;
 
-  void queryClient.prefetchQuery(trpc.daily_log.getAll.queryOptions({
-    search,
-    mood,
-    startDate: serializedStartDate,
-    endDate: serializedEndDate
-  }))
-
-  const stats: Stat[] = [
-    {
-      id: "total-memories",
-      icon: Book01Icon,
-      label: "Total Memories",
-      value: "1,247",
-      description: "All time entries",
-      color: "text-purple-400",
-    },
-    {
-      id: "avg-mood",
-      icon: Smile,
-      label: "Emotional Peak",
-      value: "Happy",
-      description: "Dominant sentiment",
-      color: "text-yellow-300",
-    },
-    {
-      id: "current-streak",
-      icon: FireIcon,
-      label: "Current Streak",
-      value: "12 days",
-      description: "Keep it up!",
-      color: "text-yellow-400",
-    },
-    {
-      id: "consistency",
-      icon: CalendarIcon,
-      label: "Consistency",
-      value: "85%",
-      description: "Last 30 days",
-      color: "text-green-400",
-      progress: 85,
-    },
-  ];
-
+  void queryClient.prefetchQuery(
+    trpc.daily_log.getAll.queryOptions({
+      search,
+      mood,
+      startDate: serializedStartDate,
+      endDate: serializedEndDate,
+    }),
+  );
 
   return (
     <div>
       <div className="grid py-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <StatCard key={stat.id} stat={stat} />
-        ))}
+        <LogStats />
       </div>
       <Suspense fallback={<div className="p-4">Loading filters...</div>}>
         <FilterControls />
@@ -89,7 +52,7 @@ const Page = async ({ searchParams }: PageProps) => {
       <div className="mt-2">
         <HydrationBoundary state={dehydrate(queryClient)}>
           <Suspense fallback={<DailyLogTableSkeleton />}>
-             <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
               <DailyLogTable />
               <div className="mt-4 w-fit ml-auto">
                 <DailyLogPagination
