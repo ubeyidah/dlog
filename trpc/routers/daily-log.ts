@@ -6,7 +6,7 @@ import { LOG_MOOD } from "@/lib/generated/prisma/enums";
 
 import z from "zod";
 import { TRPCError } from "@trpc/server";
-import { getConsistancy, getLogStreak } from "../helper/dlog";
+import { getConsistency, getLogStreak } from "../helper/dlog";
 
 const getAllInputSchema = z.object({
   search: z.string().optional(),
@@ -77,7 +77,7 @@ export const dailyLogRouter = createTRPCRouter({
       return logs;
     }),
   stats: protectedProcedure.query(async ({ ctx }) => {
-    const [totalMemories, avgMood, streak, { consistancy }] = await Promise.all(
+    const [totalMemories, avgMood, streak, { consistency }] = await Promise.all(
       [
         prisma.dailyLog.count({
           where: { userId: ctx.userId },
@@ -90,7 +90,7 @@ export const dailyLogRouter = createTRPCRouter({
           take: 1,
         }),
         getLogStreak(ctx.userId),
-        getConsistancy(ctx.userId),
+        getConsistency(ctx.userId),
       ],
     );
     return [
@@ -118,10 +118,10 @@ export const dailyLogRouter = createTRPCRouter({
       {
         id: "consistency",
         label: "Consistency",
-        value: `${consistancy}%`,
+        value: `${consistency}%`,
         description: "Last 30 days",
         color: "text-green-400",
-        progress: consistancy,
+        progress: consistency,
       },
     ];
   }),

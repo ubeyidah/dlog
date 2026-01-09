@@ -13,7 +13,7 @@ export const getLogStreak = async (userId: string) => {
   let streak = 1;
   let lastDate = dayjs(logs[0].createdAt).startOf("day");
 
-  for (let i = 1; i <= logs.length; i++) {
+  for (let i = 1; i < logs.length; i++) {
     const currentDate = dayjs(logs[i].createdAt).startOf("day");
 
     if (lastDate.diff(currentDate, "day") == 1) {
@@ -26,7 +26,7 @@ export const getLogStreak = async (userId: string) => {
   return streak;
 };
 
-export const getConsistancy = async (userId: string, dayRange: number = 30) => {
+export const getConsistency = async (userId: string, dayRange: number = 30) => {
   const startDate = dayjs()
     .subtract(dayRange - 1, "day")
     .startOf("day");
@@ -44,10 +44,10 @@ export const getConsistancy = async (userId: string, dayRange: number = 30) => {
   );
 
   const daysDone = uniqueDays.size;
-  const consistancy = Math.round((daysDone / dayRange) * 100);
+  const consistency = Math.round((daysDone / dayRange) * 100);
   return {
     dayRange,
     daysDone,
-    consistancy,
+    consistency,
   };
 };
