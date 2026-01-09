@@ -1,12 +1,11 @@
-'use client'
-
+"use client";
 
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -14,8 +13,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   Empty,
   EmptyContent,
@@ -23,14 +22,14 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty"
+} from "@/components/ui/empty";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import {
   MoreHorizontalIcon,
   ViewIcon,
@@ -38,33 +37,33 @@ import {
   Delete01Icon,
   CalendarIcon,
   Search01Icon,
-} from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
-import dayjs from "dayjs"
-import { moodEmojis } from "@/lib/moods"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { useTRPC } from "@/trpc/client"
-import { DailyLog } from "@/lib/types"
-import { useQueryStates, parseAsString, parseAsIsoDateTime } from 'nuqs'
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import dayjs from "dayjs";
+import { moodEmojis } from "@/lib/moods";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/trpc/client";
+import { DailyLog } from "@/lib/types";
+import { useQueryStates, parseAsString, parseAsIsoDateTime } from "nuqs";
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
-  PRODUCTIVE: 'bg-green-600/5 text-green-700',
-  INSPIRED: 'bg-blue-600/5 text-blue-700',
-  GRATEFUL: 'bg-purple-600/5 text-purple-700',
-  ENERGIZED: 'bg-yellow-600/5 text-yellow-700',
-  PEACEFUL: 'bg-indigo-600/5 text-indigo-700',
-  NEUTRAL: 'bg-gray-600/5 text-gray-700',
-  REFLECTIVE: 'bg-slate-600/5 text-slate-700',
-  CURIOUS: 'bg-teal-600/5 text-teal-700',
-  STRUGGLING: 'bg-amber-600/5 text-amber-700',
-  TIRED: 'bg-red-600/5 text-red-700',
-  OVERWHELMED: 'bg-orange-600/5 text-orange-700',
-  DISTRACTED: 'bg-pink-600/5 text-pink-700',
-  DOUBTFUL: 'bg-cyan-600/5 text-cyan-700',
-  SPIRITUAL: 'bg-violet-600/5 text-violet-700',
-  PATIENT: 'bg-emerald-600/5 text-emerald-700',
-}
+  PRODUCTIVE: "bg-green-600/5 text-green-700",
+  INSPIRED: "bg-blue-600/5 text-blue-700",
+  GRATEFUL: "bg-purple-600/5 text-purple-700",
+  ENERGIZED: "bg-yellow-600/5 text-yellow-700",
+  PEACEFUL: "bg-indigo-600/5 text-indigo-700",
+  NEUTRAL: "bg-gray-600/5 text-gray-700",
+  REFLECTIVE: "bg-slate-600/5 text-slate-700",
+  CURIOUS: "bg-teal-600/5 text-teal-700",
+  STRUGGLING: "bg-amber-600/5 text-amber-700",
+  TIRED: "bg-red-600/5 text-red-700",
+  OVERWHELMED: "bg-orange-600/5 text-orange-700",
+  DISTRACTED: "bg-pink-600/5 text-pink-700",
+  DOUBTFUL: "bg-cyan-600/5 text-cyan-700",
+  SPIRITUAL: "bg-violet-600/5 text-violet-700",
+  PATIENT: "bg-emerald-600/5 text-emerald-700",
+};
 
 // Column definitions
 const columns: ColumnDef<DailyLog>[] = [
@@ -72,12 +71,10 @@ const columns: ColumnDef<DailyLog>[] = [
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date
+      const date = row.getValue("createdAt") as Date;
       return (
-        <div className="text-left">
-          {dayjs(date).format('MMM DD, YYYY')}
-        </div>
-      )
+        <div className="text-left">{dayjs(date).format("MMM DD, YYYY")}</div>
+      );
     },
   },
 
@@ -85,31 +82,31 @@ const columns: ColumnDef<DailyLog>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => {
-      const title = row.getValue("title") as string
+      const title = row.getValue("title") as string;
       return (
         <div className="truncate max-w-xs" title={title}>
           {title}
         </div>
-      )
+      );
     },
   },
   {
     accessorKey: "mood",
     header: "Mood",
     cell: ({ row }) => {
-      const mood = row.getValue("mood") as string
+      const mood = row.getValue("mood") as string;
       return (
         <Badge className={`${moodColors[mood]} rounded-md text-xs uppercase`}>
           {moodEmojis[mood]} {mood.toLowerCase()}
         </Badge>
-      )
+      );
     },
   },
   {
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const tags = row.getValue("tags") as string[]
+      const tags = row.getValue("tags") as string[];
       return (
         <div>
           {tags.map((tag, index) => (
@@ -118,7 +115,7 @@ const columns: ColumnDef<DailyLog>[] = [
             </span>
           ))}
         </div>
-      )
+      );
     },
   },
   {
@@ -126,11 +123,13 @@ const columns: ColumnDef<DailyLog>[] = [
     header: "Action",
     cell: () => (
       <DropdownMenu>
-        <DropdownMenuTrigger render={
-          <Button variant="ghost" size="sm">
-            <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
-          </Button>
-        } />
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="sm">
+              <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
+            </Button>
+          }
+        />
 
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
@@ -149,21 +148,26 @@ const columns: ColumnDef<DailyLog>[] = [
       </DropdownMenu>
     ),
   },
-]
-
+];
 
 export function DailyLogTable() {
-  "use no memo"
-  const trpc = useTRPC()
+  const trpc = useTRPC();
   const [{ search, mood, startDate, endDate }] = useQueryStates({
-    search: parseAsString.withDefault(''),
+    search: parseAsString.withDefault(""),
     mood: parseAsString,
     startDate: parseAsIsoDateTime,
     endDate: parseAsIsoDateTime,
-  })
+  });
   const serializedStartDate = startDate ? startDate.toISOString() : null;
   const serializedEndDate = endDate ? endDate.toISOString() : null;
-  const { data }: { data: DailyLog[] } = useSuspenseQuery(trpc.daily_log.getAll.queryOptions({ search, mood, startDate: serializedStartDate, endDate: serializedEndDate }));
+  const { data }: { data: DailyLog[] } = useSuspenseQuery(
+    trpc.daily_log.getAll.queryOptions({
+      search,
+      mood,
+      startDate: serializedStartDate,
+      endDate: serializedEndDate,
+    }),
+  );
 
   const hasFilters = !!(search || mood || startDate || endDate);
 
@@ -172,7 +176,7 @@ export function DailyLogTable() {
     data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="overflow-hidden rounded-md border">
@@ -185,9 +189,9 @@ export function DailyLogTable() {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                 </TableHead>
               ))}
             </TableRow>
@@ -209,13 +213,21 @@ export function DailyLogTable() {
             ))
           ) : (
             <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={columns.length} className="h-24 py-16 text-center">
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 py-16 text-center"
+              >
                 <Empty className="border-none bg-transparent p-0">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
-                      <HugeiconsIcon icon={hasFilters ? Search01Icon : CalendarIcon} className="h-6 w-6" />
+                      <HugeiconsIcon
+                        icon={hasFilters ? Search01Icon : CalendarIcon}
+                        className="h-6 w-6"
+                      />
                     </EmptyMedia>
-                    <EmptyTitle>{hasFilters ? "No results found" : "No Daily Logs Yet"}</EmptyTitle>
+                    <EmptyTitle>
+                      {hasFilters ? "No results found" : "No Daily Logs Yet"}
+                    </EmptyTitle>
                     <EmptyDescription>
                       {hasFilters
                         ? "Try adjusting your search filters or clearing them to see more results."
@@ -234,5 +246,5 @@ export function DailyLogTable() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

@@ -7,6 +7,7 @@ import {
   FireIcon,
   Smile,
 } from "@hugeicons/core-free-icons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface Stat {
   id: string;
@@ -45,7 +46,7 @@ export function StatCard({ stat }: StatCardProps) {
             <HugeiconsIcon
               icon={Icon}
               strokeWidth={2}
-              className="opacity-10 size-12"
+              className={`opacity-10 size-12 group-hover:opacity-50`}
             />
           )}
         </div>
@@ -67,10 +68,33 @@ export function StatCard({ stat }: StatCardProps) {
         <p className="text-xs text-muted-foreground mt-2 mb-1">
           {stat.description}
         </p>
-        {stat.progress && (
+        {stat.progress !== undefined && (
           <Progress value={stat.progress} className={"rounded-full"} />
         )}
       </CardContent>
     </Card>
   );
 }
+
+export const StatCardSkeleton = () => {
+  return (
+    <Card className="relative group">
+      <CardHeader>
+        <div className="w-24 h-24 rounded-lg bg-primary/10 group-hover:rotate-6 group-hover:-bottom-4 transition-transform duration-300 absolute rotate-12 -right-6 -bottom-10 p-2">
+          <Skeleton className="w-full h-full rounded-lg" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-5 w-5 rounded" />
+          <CardTitle className="text-sm uppercase font-bold text-foreground/60">
+            <Skeleton className="w-20 h-4" />
+          </CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="w-24 h-10 mb-2 rounded" />
+        <Skeleton className="w-32 h-3 mb-2 rounded" />
+        <Skeleton className="w-full h-2 rounded-full" />
+      </CardContent>
+    </Card>
+  );
+};

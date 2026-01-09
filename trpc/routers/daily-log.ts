@@ -6,6 +6,7 @@ import { LOG_MOOD } from "@/lib/generated/prisma/enums";
 
 import z from "zod";
 import { TRPCError } from "@trpc/server";
+import { getConsistency, getLogStreak } from "../helper/dlog";
 
 const getAllInputSchema = z.object({
   search: z.string().optional(),
@@ -76,19 +77,22 @@ export const dailyLogRouter = createTRPCRouter({
       return logs;
     }),
   stats: protectedProcedure.query(async ({ ctx }) => {
-    const [totalMemories, avgMood, streak] = await Promise.all([
-      prisma.dailyLog.count({
-        where: { userId: ctx.userId },
-      }),
-      prisma.dailyLog.groupBy({
-        by: ["mood"],
-        _count: { mood: true },
-        orderBy: { _count: { mood: "desc" } },
-        take: 1,
-      }),
-      getLogStreak(),
-    ]);
-
+    const [totalMemories, avgMood, streak, { consistency }] = await Promise.all(
+      [
+        prisma.dailyLog.count({
+          where: { userId: ctx.userId },
+        }),
+        prisma.dailyLog.groupBy({
+          by: ["mood"],
+          where: { userId: ctx.userId },
+          _count: { mood: true },
+          orderBy: { _count: { mood: "desc" } },
+          take: 1,
+        }),
+        getLogStreak(ctx.userId),
+        getConsistency(ctx.userId),
+      ],
+    );
     return [
       {
         id: "total-memories",
@@ -100,7 +104,7 @@ export const dailyLogRouter = createTRPCRouter({
       {
         id: "avg-mood",
         label: "Emotional Peak",
-        value: avgMood[0].mood,
+        value: avgMood[0]?.mood || "--",
         description: "Dominant sentiment",
         color: "text-yellow-300",
       },
@@ -114,35 +118,11 @@ export const dailyLogRouter = createTRPCRouter({
       {
         id: "consistency",
         label: "Consistency",
-        value: "85%",
+        value: `${consistency}%`,
         description: "Last 30 days",
         color: "text-green-400",
-        progress: 85,
+        progress: consistency,
       },
     ];
   }),
 });
-
-const getLogStreak = async () => {
-  const logs = await prisma.dailyLog.findMany({
-    orderBy: { createdAt: "desc" },
-    select: { createdAt: true },
-  });
-
-  if (!logs.length) return 0;
-
-  let streak = 1;
-  let lastDate = dayjs(logs[0].createdAt).startOf("day");
-
-  for (let i = 1; i <= logs.length; i++) {
-    const currentDate = dayjs(logs[i].createdAt).startOf("day");
-
-    if (lastDate.diff(currentDate, "day") == 1) {
-      streak++;
-      lastDate = currentDate;
-    } else if (lastDate.diff(currentDate, "day") > 1) {
-      break;
-    }
-  }
-  return streak;
-};
