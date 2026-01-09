@@ -84,6 +84,7 @@ export const dailyLogRouter = createTRPCRouter({
         }),
         prisma.dailyLog.groupBy({
           by: ["mood"],
+          where: { userId: ctx.userId },
           _count: { mood: true },
           orderBy: { _count: { mood: "desc" } },
           take: 1,
@@ -103,7 +104,7 @@ export const dailyLogRouter = createTRPCRouter({
       {
         id: "avg-mood",
         label: "Emotional Peak",
-        value: avgMood[0].mood,
+        value: avgMood[0]?.mood || "--",
         description: "Dominant sentiment",
         color: "text-yellow-300",
       },
