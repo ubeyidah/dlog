@@ -29,7 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   MoreHorizontalIcon,
   ViewIcon,
@@ -45,6 +45,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { DailyLog } from "@/lib/types";
 import { useQueryStates, parseAsString, parseAsIsoDateTime } from "nuqs";
+import Link from "next/link";
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
@@ -236,7 +237,12 @@ export function DailyLogTable() {
                   </EmptyHeader>
                   {!hasFilters && (
                     <EmptyContent>
-                      <Button>Create First Log</Button>
+                      <Link
+                        href={"/dashboard/daily-log/write"}
+                        className={buttonVariants()}
+                      >
+                        Create First Log
+                      </Link>
                     </EmptyContent>
                   )}
                 </Empty>

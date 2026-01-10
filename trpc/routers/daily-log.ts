@@ -63,13 +63,13 @@ export const dailyLogRouter = createTRPCRouter({
           ...(mood && { mood: mood as LOG_MOOD }),
           ...(startDate || endDate
             ? {
-                createdAt: {
-                  ...(startDate && {
-                    gte: dayjs(startDate).startOf("day").toDate(),
-                  }),
-                  ...(endDate && { lte: dayjs(endDate).endOf("day").toDate() }),
-                },
-              }
+              createdAt: {
+                ...(startDate && {
+                  gte: dayjs(startDate).startOf("day").toDate(),
+                }),
+                ...(endDate && { lte: dayjs(endDate).endOf("day").toDate() }),
+              },
+            }
             : {}),
         },
         orderBy: { createdAt: "desc" },
