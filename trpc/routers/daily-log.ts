@@ -76,6 +76,17 @@ export const dailyLogRouter = createTRPCRouter({
       });
       return logs;
     }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await prisma.dailyLog.deleteMany({
+        where: {
+          id: input.id,
+          userId: ctx.userId,
+        },
+      });
+      return { message: "Daily log deleted successfully" };
+    }),
   stats: protectedProcedure.query(async ({ ctx }) => {
     const [totalMemories, avgMood, streak, { consistency }] = await Promise.all(
       [

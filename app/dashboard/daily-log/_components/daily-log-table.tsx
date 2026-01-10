@@ -46,6 +46,8 @@ import { useTRPC } from "@/trpc/client";
 import { DailyLog } from "@/lib/types";
 import { useQueryStates, parseAsString, parseAsIsoDateTime } from "nuqs";
 import Link from "next/link";
+import { useState } from "react";
+import { DeleteDialog } from "./delete-dialog";
 
 // Mood colors mapping
 const moodColors: Record<string, string> = {
@@ -66,91 +68,6 @@ const moodColors: Record<string, string> = {
   PATIENT: "bg-emerald-600/5 text-emerald-700",
 };
 
-// Column definitions
-const columns: ColumnDef<DailyLog>[] = [
-  {
-    accessorKey: "createdAt",
-    header: "Date",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
-      return (
-        <div className="text-left">{dayjs(date).format("MMM DD, YYYY")}</div>
-      );
-    },
-  },
-
-  {
-    accessorKey: "title",
-    header: "Title",
-    cell: ({ row }) => {
-      const title = row.getValue("title") as string;
-      return (
-        <div className="truncate max-w-xs" title={title}>
-          {title}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "mood",
-    header: "Mood",
-    cell: ({ row }) => {
-      const mood = row.getValue("mood") as string;
-      return (
-        <Badge className={`${moodColors[mood]} rounded-md text-xs uppercase`}>
-          {moodEmojis[mood]} {mood.toLowerCase()}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "tags",
-    header: "Tags",
-    cell: ({ row }) => {
-      const tags = row.getValue("tags") as string[];
-      return (
-        <div>
-          {tags.map((tag, index) => (
-            <span key={index} className="text-sm text-muted-foreground mr-2">
-              {tag}
-            </span>
-          ))}
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    header: "Action",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button variant="ghost" size="sm">
-              <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
-            </Button>
-          }
-        />
-
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
-            Read
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive">
-            <HugeiconsIcon icon={Delete01Icon} className="h-4 w-4 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-];
-
 export function DailyLogTable() {
   const trpc = useTRPC();
   const [{ search, mood, startDate, endDate }] = useQueryStates({
@@ -158,6 +75,9 @@ export function DailyLogTable() {
     mood: parseAsString,
     startDate: parseAsIsoDateTime,
     endDate: parseAsIsoDateTime,
+  });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; log?: DailyLog }>({
+    open: false,
   });
   const serializedStartDate = startDate ? startDate.toISOString() : null;
   const serializedEndDate = endDate ? endDate.toISOString() : null;
@@ -172,6 +92,97 @@ export function DailyLogTable() {
 
   const hasFilters = !!(search || mood || startDate || endDate);
 
+  // Column definitions
+  const columns: ColumnDef<DailyLog>[] = [
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => {
+        const date = row.getValue("createdAt") as Date;
+        return (
+          <div className="text-left">{dayjs(date).format("MMM DD, YYYY")}</div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => {
+        const title = row.getValue("title") as string;
+        return (
+          <div className="truncate max-w-xs" title={title}>
+            {title}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "mood",
+      header: "Mood",
+      cell: ({ row }) => {
+        const mood = row.getValue("mood") as string;
+        return (
+          <Badge className={`${moodColors[mood]} rounded-md text-xs uppercase`}>
+            {moodEmojis[mood]} {mood.toLowerCase()}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "tags",
+      header: "Tags",
+      cell: ({ row }) => {
+        const tags = row.getValue("tags") as string[];
+        return (
+          <div>
+            {tags.map((tag, index) => (
+              <span key={index} className="text-sm text-muted-foreground mr-2">
+                {tag}
+              </span>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => {
+        const log = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="sm">
+                  <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
+                </Button>
+              }
+            />
+
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
+                Read
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => setDeleteDialog({ open: true, log })}
+              >
+                <HugeiconsIcon icon={Delete01Icon} className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: data,
@@ -180,77 +191,89 @@ export function DailyLogTable() {
   });
 
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
-        <TableHeader className="bg-card rounded-xl">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+    <>
+      <div className="overflow-hidden rounded-md border">
+        <Table>
+          <TableHeader className="bg-card rounded-xl">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow className="hover:bg-transparent">
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 py-16 text-center"
-              >
-                <Empty className="border-none bg-transparent p-0">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon
-                        icon={hasFilters ? Search01Icon : CalendarIcon}
-                        className="h-6 w-6"
-                      />
-                    </EmptyMedia>
-                    <EmptyTitle>
-                      {hasFilters ? "No results found" : "No Daily Logs Yet"}
-                    </EmptyTitle>
-                    <EmptyDescription>
-                      {hasFilters
-                        ? "Try adjusting your search filters or clearing them to see more results."
-                        : "Start your journaling journey by creating your first daily log entry."}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  {!hasFilters && (
-                    <EmptyContent>
-                      <Link
-                        href={"/dashboard/daily-log/write"}
-                        className={buttonVariants()}
-                      >
-                        Create First Log
-                      </Link>
-                    </EmptyContent>
-                  )}
-                </Empty>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 py-16 text-center"
+                >
+                  <Empty className="border-none bg-transparent p-0">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <HugeiconsIcon
+                          icon={hasFilters ? Search01Icon : CalendarIcon}
+                          className="h-6 w-6"
+                        />
+                      </EmptyMedia>
+                      <EmptyTitle>
+                        {hasFilters ? "No results found" : "No Daily Logs Yet"}
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        {hasFilters
+                          ? "Try adjusting your search filters or clearing them to see more results."
+                          : "Start your journaling journey by creating your first daily log entry."}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    {!hasFilters && (
+                      <EmptyContent>
+                        <Link
+                          href={"/dashboard/daily-log/write"}
+                          className={buttonVariants()}
+                        >
+                          Create First Log
+                        </Link>
+                      </EmptyContent>
+                    )}
+                  </Empty>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {deleteDialog.log && (
+        <DeleteDialog
+          open={deleteDialog.open}
+          onOpenChange={(open) =>
+            setDeleteDialog({ open, log: open ? deleteDialog.log : undefined })
+          }
+          logId={deleteDialog.log.id}
+          logTitle={deleteDialog.log.title}
+        />
+      )}
+    </>
   );
 }
