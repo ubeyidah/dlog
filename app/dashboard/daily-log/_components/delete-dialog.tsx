@@ -27,7 +27,7 @@ export function DeleteDialog({ open, onOpenChange, logId, logTitle }: DeleteDial
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation(
+  const { mutate, isPending, error, isError } = useMutation(
     trpc.daily_log.delete.mutationOptions({
       onSuccess: () => {
         toast.success("Daily log deleted successfully!");
@@ -60,7 +60,11 @@ export function DeleteDialog({ open, onOpenChange, logId, logTitle }: DeleteDial
               </DialogDescription>
             </div>
           </div>
+          {
+            isError && <div className="my-2 text-destructive bg-destructive/20 border border-r-destructive/40 p-2">{error.message}</div>
+          }
         </DialogHeader>
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
