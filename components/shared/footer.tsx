@@ -57,18 +57,35 @@ const footerLinks: FooterSection[] = [
 
 export function Footer() {
   return (
-    <Wrapper as="footer" className="relative flex w-full flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-4 py-6 md:rounded-t-6xl md:px-6">
+    <Wrapper
+      as="footer"
+      className="relative flex w-full flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-4 py-6 md:rounded-t-6xl md:px-6"
+    >
       <div className="-translate-x-1/2 -translate-y-1/2 absolute top-0 right-1/2 left-1/2 h-px w-1/3 rounded-full bg-foreground/20 blur" />
 
       <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
         <AnimatedContainer className="space-y-4">
           <div className="w-fit">
-            <Image src={"/logo.svg"} width={20} height={10} alt='dlog logo' className='h-8 w-full' />
+            <Image
+              src={"/logo.svg"}
+              width={20}
+              height={10}
+              alt="dlog logo"
+              className="h-8 w-full"
+            />
           </div>
           <p className="mt-8 text-muted-foreground text-sm md:mt-0">
             &copy; {new Date().getFullYear()} DLOG, All rights reserved
           </p>
-          <p className="text-muted-foreground">Built by <a href="https://github.com/ubeyidah" className="text-primary hover:underline">Ubeyidah</a></p>
+          <p className="text-muted-foreground">
+            Built by{" "}
+            <a
+              href="https://github.com/ubeyidah"
+              className="text-primary hover:underline"
+            >
+              Ubeyidah
+            </a>
+          </p>
 
           <ThemeSwitcher />
         </AnimatedContainer>
@@ -86,7 +103,12 @@ export function Footer() {
                         href={link.href}
                         key={`${section.label}-${link.title}`}
                       >
-                        {link.icon && <HugeiconsIcon icon={link.icon} className="me-1 size-4" />}
+                        {link.icon && (
+                          <HugeiconsIcon
+                            icon={link.icon}
+                            className="me-1 size-4"
+                          />
+                        )}
                         {link.title}
                       </a>
                     </li>

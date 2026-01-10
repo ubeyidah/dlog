@@ -1,0 +1,55 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { defaultContent } from "@/components/shared/editor/templates";
+import { EditorMenu } from "./editor-menu";
+import { EditorBubbleMenu } from "./editor-bubble-menu";
+
+
+interface iAppProps {
+  value: string;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+  invalid?: boolean;
+  className?: string;
+}
+export const TextEditor = ({ value, className, onBlur, onChange, invalid }: iAppProps) => {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        class:
+          cn("min-h-[600px] outline-none border border-transparent focus:border-border bg-border/40 p-5 prose prose-stone prose-sm sm:prose !w-full !max-w-none dark:prose-invert rounded-sm", className, invalid && "border-destructive/50"),
+      },
+    },
+    onBlur,
+    onUpdate: ({ editor }) => {
+      onChange(JSON.stringify(editor.getJSON()))
+    },
+    content: (() => {
+      if (!value) return defaultContent
+      try {
+        return JSON.parse(value)
+      } catch {
+        return defaultContent
+      }
+    })(),
+  });
+
+  if (!editor) {
+    return null;
+  }
+
+  return (
+    <div className="relative space-y-2">
+      <EditorMenu editor={editor} />
+      <div className="relative">
+        <EditorContent editor={editor} />
+        <EditorBubbleMenu editor={editor} />
+      </div>
+    </div>
+  );
+};

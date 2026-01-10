@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import {
   Search01Icon,
@@ -36,6 +36,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { LOG_MOODS } from "@/lib/validation/daily-log.schema";
 import { moodEmojis } from "@/lib/moods";
+import Link from "next/link";
 
 const FilterControls = () => {
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
@@ -139,10 +140,13 @@ const FilterControls = () => {
           </PopoverContent>
         </Popover>
 
-        <Button className="md:w-fit">
+        <Link
+          href={"/dashboard/daily-log/write"}
+          className={buttonVariants({ className: "md:w-fit" })}
+        >
           <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
           Create Log
-        </Button>
+        </Link>
       </div>
     </div>
   );
