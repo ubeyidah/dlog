@@ -49,7 +49,7 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
   const formValues = form.watch();
   const hasChanges = useMemo(() => {
     if (!isUpdateMode || !defaultValues) return true;
-    
+
     return (
       formValues.title !== defaultValues.title ||
       formValues.content !== defaultValues.content ||
@@ -97,9 +97,9 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
     <form onSubmit={form.handleSubmit(handleSave)}>
 
       <SiteHeader label={isUpdateMode ? "Edit Log" : "Write"}>
-        <Button 
-          type="submit" 
-          className={"px-5"} 
+        <Button
+          type="submit"
+          className={"px-5"}
           disabled={isPending || (isUpdateMode && !hasChanges)}
         >
           {isPending ? (
@@ -168,7 +168,6 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
               selected={selectedDate}
               onSelect={setSelectedDate}
               className="rounded-md px-0! w-full"
-              disabled={isUpdateMode}
             />
           </div>
           <div>

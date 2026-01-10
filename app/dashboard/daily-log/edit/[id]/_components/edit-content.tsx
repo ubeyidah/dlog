@@ -15,18 +15,16 @@ export const EditDailyLogContent = ({ id }: EditDailyLogContentProps) => {
   );
 
   return (
-    <div>
-      <WriteForm
-        mode="update"
-        defaultValues={{
-          id: log.id,
-          title: log.title,
-          content: log.content,
-          mood: log.mood,
-          tags: log.tags || [],
-        }}
-        createdAt={log.createdAt}
-      />
-    </div>
+    <WriteForm
+      mode="update"
+      defaultValues={{
+        id: log.id,
+        title: log.title,
+        content: log.content,
+        mood: log.mood,
+        tags: log.tags || [],
+      }}
+      createdAt={log.createdAt}
+    />
   );
 };
