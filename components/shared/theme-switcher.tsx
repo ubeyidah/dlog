@@ -10,8 +10,9 @@ import {
 import { Moon, Sun, SunMoon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useTheme } from "next-themes";
+import { JSX } from "react";
 
-const ThemeSwitcher = () => {
+const ThemeSwitcher = (): JSX.Element | null => {
   const { theme, setTheme, resolvedTheme } = useTheme();
 
   if (!resolvedTheme) return null;
