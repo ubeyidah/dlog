@@ -165,7 +165,7 @@ export function DailyLogTable() {
                 <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
                 Read
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem render={<Link href={`/dashboard/daily-log/edit/${log.id}`} />}>
                 <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>

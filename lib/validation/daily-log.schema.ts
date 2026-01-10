@@ -18,3 +18,19 @@ export const createDailyLogSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 export type CreateDailyLogInput = z.infer<typeof createDailyLogSchema>
+
+export const updateDailyLogSchema = z.object({
+  id: z.string(),
+  title: z
+    .string()
+    .min(6, "Title should be at least 6 characters."),
+  content: z
+    .string()
+    .min(10, "Content should be at least 10 characters."),
+  mood: z
+    .enum([...LOG_MOODS], {
+      message: "Please select a valid mood.",
+    }),
+  tags: z.array(z.string()).optional(),
+});
+export type UpdateDailyLogInput = z.infer<typeof updateDailyLogSchema>

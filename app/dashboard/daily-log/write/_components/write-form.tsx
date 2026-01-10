@@ -3,7 +3,7 @@ import { TextEditor } from "@/components/shared/editor/editor";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { moodEmojis } from "@/lib/moods";
-import { CreateDailyLogInput, createDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema";
+import { CreateDailyLogInput, createDailyLogSchema, UpdateDailyLogInput, updateDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema";
 import dayjs from "dayjs";
 import { useTRPC } from "@/trpc/client";
 import { Controller, useForm } from "react-hook-form";
@@ -17,23 +17,48 @@ import { TagInput } from "@/components/shared/tag-input";
 import SiteHeader from "@/components/shared/site-header";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { useMemo, useState } from "react";
 
-export const WriteForm = () => {
-  const date = dayjs();
+type WriteFormProps = {
+  mode?: "write" | "update";
+  defaultValues?: UpdateDailyLogInput;
+  createdAt?: Date | string;
+};
+
+export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFormProps) => {
+  const isUpdateMode = mode === "update";
+  const date = createdAt ? dayjs(createdAt) : dayjs();
   const formattedDate = date.format("dddd, MMMM D, YYYY");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    createdAt ? new Date(createdAt) : undefined
+  );
 
-  const router = useRouter()
+  const router = useRouter();
   const trpc = useTRPC();
-  const form = useForm<CreateDailyLogInput>({
-    resolver: zodResolver(createDailyLogSchema),
-    defaultValues: {
+  const form = useForm<CreateDailyLogInput | UpdateDailyLogInput>({
+    resolver: zodResolver(isUpdateMode ? updateDailyLogSchema : createDailyLogSchema),
+    defaultValues: defaultValues || {
       title: "",
       content: "",
       mood: undefined,
       tags: [],
     },
   });
-  const { mutate, isPending } = useMutation(
+
+  // Track if form has been modified
+  const formValues = form.watch();
+  const hasChanges = useMemo(() => {
+    if (!isUpdateMode || !defaultValues) return true;
+    
+    return (
+      formValues.title !== defaultValues.title ||
+      formValues.content !== defaultValues.content ||
+      formValues.mood !== defaultValues.mood ||
+      JSON.stringify(formValues.tags) !== JSON.stringify(defaultValues.tags)
+    );
+  }, [formValues, defaultValues, isUpdateMode]);
+
+  const createMutation = useMutation(
     trpc.daily_log.create.mutationOptions({
       onSuccess: () => {
         toast.success("Daily log created successfully!");
@@ -43,20 +68,48 @@ export const WriteForm = () => {
       onError: (error) => {
         toast.error(error.message || "Something went wrong while creating the daily log.");
       }
-    },
-
-    ),
+    }),
   );
 
-  const handleSave = (data: CreateDailyLogInput) => {
-    mutate(data);
+  const updateMutation = useMutation(
+    trpc.daily_log.update.mutationOptions({
+      onSuccess: () => {
+        toast.success("Daily log updated successfully!");
+        router.push("/dashboard/daily-log");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Something went wrong while updating the daily log.");
+      }
+    }),
+  );
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
+  const handleSave = (data: CreateDailyLogInput | UpdateDailyLogInput) => {
+    if (isUpdateMode) {
+      updateMutation.mutate(data as UpdateDailyLogInput);
+    } else {
+      createMutation.mutate(data as CreateDailyLogInput);
+    }
   };
 
   return (
     <form onSubmit={form.handleSubmit(handleSave)}>
 
-      <SiteHeader label="Write">
-        <Button type="submit" className={"px-5"} disabled={isPending}>{isPending ? <><Spinner /> Saving...</> : "Save"}</Button>
+      <SiteHeader label={isUpdateMode ? "Edit Log" : "Write"}>
+        <Button 
+          type="submit" 
+          className={"px-5"} 
+          disabled={isPending || (isUpdateMode && !hasChanges)}
+        >
+          {isPending ? (
+            <>
+              <Spinner /> {isUpdateMode ? "Updating..." : "Saving..."}
+            </>
+          ) : (
+            isUpdateMode ? "Update Changes" : "Save"
+          )}
+        </Button>
       </SiteHeader>
       <div className="grid gap-6 md:grid-cols-[3fr_1fr]">
 
@@ -112,7 +165,10 @@ export const WriteForm = () => {
             <h3 className="px-1">Calendar View</h3>
             <Calendar
               mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
               className="rounded-md px-0! w-full"
+              disabled={isUpdateMode}
             />
           </div>
           <div>
