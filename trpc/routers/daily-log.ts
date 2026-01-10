@@ -79,12 +79,19 @@ export const dailyLogRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await prisma.dailyLog.deleteMany({
+      const result = await prisma.dailyLog.delete({
         where: {
           id: input.id,
           userId: ctx.userId,
         },
       });
+
+      if (!result) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Daily log not found",
+        })
+      }
       return { message: "Daily log deleted successfully" };
     }),
   stats: protectedProcedure.query(async ({ ctx }) => {

@@ -36,7 +36,7 @@ export function DeleteDialog({ open, onOpenChange, logId, logTitle }: DeleteDial
         queryClient.invalidateQueries(trpc.daily_log.stats.queryOptions());
       },
       onError: (error) => {
-        toast.error("Failed to delete daily log: " + error.message);
+        toast.error(error.message);
       },
     }),
   );
@@ -50,7 +50,7 @@ export function DeleteDialog({ open, onOpenChange, logId, logTitle }: DeleteDial
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center py-2 flex-col gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/20">
+            <div className="flex mb-5 h-16 w-16 items-center justify-center rounded-full bg-red-500/20">
               <HugeiconsIcon icon={Delete02Icon} className="h-8 w-8 text-red-500" />
             </div>
             <div className="text-center space-y-2">
