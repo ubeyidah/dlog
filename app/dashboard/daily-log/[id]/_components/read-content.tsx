@@ -45,18 +45,23 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
   const month = dayjs(log.createdAt).format("MMMM");
   const year = dayjs(log.createdAt).format("YYYY");
 
-  const exportAsText = () => {
-    const content = `${log.title}\n\n${log.content}\n\nTags: ${log.tags?.join(', ') || ''}\n\nDate: ${dayjs(log.createdAt).format('MMMM D, YYYY')}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${log.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+import { generateHTML } from "@tiptap/html";
+import StarterKit from "@tiptap/starter-kit";
+
+const exportAsText = () => {
+  const htmlContent = generateHTML(JSON.parse(log.content), [StarterKit]);
+  const textContent = htmlContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  const content = `${log.title}\n\n${textContent}\n\nTags: ${log.tags?.join(', ') || ''}\n\nDate: ${dayjs(log.createdAt).format('MMMM D, YYYY')}`;
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${log.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
 
   return (
     <>
