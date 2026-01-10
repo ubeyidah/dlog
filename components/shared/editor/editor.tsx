@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { defaultContnet } from "@/components/shared/editor/templates";
+import { defaultContent } from "@/components/shared/editor/templates";
 import { EditorMenu } from "./editor-menu";
 import { EditorBubbleMenu } from "./editor-bubble-menu";
 
@@ -30,11 +30,11 @@ export const TextEditor = ({ value, className, onBlur, onChange, invalid }: iApp
       onChange(JSON.stringify(editor.getJSON()))
     },
     content: (() => {
-      if (!value) return defaultContnet
+      if (!value) return defaultContent
       try {
         return JSON.parse(value)
       } catch {
-        return defaultContnet
+        return defaultContent
       }
     })(),
   });

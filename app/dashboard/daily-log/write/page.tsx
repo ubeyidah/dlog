@@ -8,4 +8,4 @@ const WriteDailyLog = () => {
   )
 }
 
-export default WriteDailyLog
+export default WriteDailyLog;

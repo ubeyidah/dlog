@@ -41,7 +41,7 @@ export const WriteForm = () => {
         router.push("/dashboard/daily-log");
       },
       onError: (error) => {
-        toast.error(error.message || "something went wrong while creating the daily log.");
+        toast.error(error.message || "Something went wrong while creating the daily log.");
       }
     },
 
@@ -162,7 +162,7 @@ export const WriteForm = () => {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="tags">Tags</FieldLabel>
-                  <TagInput invalid={fieldState.invalid} value={field.value} onChange={(tags) => field.onChange(tags)} />
+                  <TagInput invalid={fieldState.invalid} value={field.value || []} onChange={(tags) => field.onChange(tags)} />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

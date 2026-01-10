@@ -6,7 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Close } from "@hugeicons/core-free-icons";
 
 interface TagInputProps {
-  value: string[] | undefined;
+  value: string[];
   onChange: (tags: string[]) => void;
   onBlur?: () => void;
   placeholder?: string;
@@ -16,7 +16,7 @@ interface TagInputProps {
 }
 
 export function TagInput({
-  value = [],
+  value,
   onBlur,
   onChange,
   placeholder = "Add tag...",
