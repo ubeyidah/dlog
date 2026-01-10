@@ -1,4 +1,4 @@
-import { createDailyLogSchema } from "@/lib/validation/daily-log.schema";
+import { createDailyLogSchema, updateDailyLogSchema } from "@/lib/validation/daily-log.schema";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
@@ -46,6 +46,51 @@ export const dailyLogRouter = createTRPCRouter({
 
       await prisma.dailyLog.create({ data: { ...input, userId: ctx.userId } });
       return { message: "Daily log created successfully" };
+    }),
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const log = await prisma.dailyLog.findFirst({
+        where: {
+          id: input.id,
+          userId: ctx.userId,
+        },
+      });
+
+      if (!log) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Daily log not found",
+        });
+      }
+
+      return log;
+    }),
+  update: protectedProcedure
+    .input(updateDailyLogSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...data } = input;
+
+      const existingLog = await prisma.dailyLog.findFirst({
+        where: {
+          id,
+          userId: ctx.userId,
+        },
+      });
+
+      if (!existingLog) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Daily log not found",
+        });
+      }
+
+      await prisma.dailyLog.update({
+        where: { id },
+        data,
+      });
+
+      return { message: "Daily log updated successfully" };
     }),
   getAll: protectedProcedure
     .input(getAllInputSchema)

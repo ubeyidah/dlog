@@ -5,6 +5,7 @@ import { Warning } from "@hugeicons/core-free-icons";
 import { Button, buttonVariants } from "../ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 interface ErrorFallbackProps {
   error: Error;
@@ -17,6 +18,9 @@ export function ErrorFallback({
   resetErrorBoundary,
   className,
 }: ErrorFallbackProps) {
+  if (error.message.includes("not found")) {
+    return notFound()
+  }
   return (
     <div
       className={cn(
