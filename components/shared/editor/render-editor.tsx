@@ -6,11 +6,11 @@ import parse from 'html-react-parser';
 import { generateHTML } from "@tiptap/html"
 
 export const RenderEditor = ({ json }: { json: JSONContent }) => {
-  const outPut = useMemo(() => {
+  const output = useMemo(() => {
     return generateHTML(json, [StarterKit])
   }, [json])
   return (
-    <div className="prose prose-sm sm:prose dark:prose-invert">{parse(outPut)}</div>
+    <div className="prose prose-sm sm:prose dark:prose-invert">{parse(output)}</div>
   )
 }
 
