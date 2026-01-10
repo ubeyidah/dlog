@@ -1,88 +1,63 @@
-export const defaultContnet = {
+export const defaultContnet =
+{
   "type": "doc",
   "content": [
     {
       "type": "heading",
-      "attrs": { "level": 2 },
-      "content": [{ "type": "text", "text": "Today’s Log" }]
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "What happened today?" }]
     },
     {
       "type": "paragraph",
       "content": [
-        { "type": "text", "text": "Write freely below, or use this template as a starting point:" }
-      ]
-    },
-    {
-      "type": "bulletList",
-      "content": [
         {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "content": [
-                { "type": "text", "text": "🌅 Morning: " },
-                { "type": "text", "text": "[What did you focus on?]", "marks": [{ "type": "italic" }] }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "content": [
-                { "type": "text", "text": "💡 Key Insight: " },
-                { "type": "text", "text": "[What did you learn?]", "marks": [{ "type": "italic" }] }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "content": [
-                { "type": "text", "text": "🛠 Challenges: " },
-                { "type": "text", "text": "[What could be improved?]", "marks": [{ "type": "italic" }] }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "content": [
-                { "type": "text", "text": "📌 Tomorrow: " },
-                { "type": "text", "text": "[Priorities for next time]", "marks": [{ "type": "italic" }] }
-              ]
-            }
-          ]
+          "type": "text",
+          "text": "Write freely about your day. Focus on moments that stood out, small or big."
         }
       ]
     },
     {
-      "type": "paragraph",
-      "content": [
-        { "type": "text", "text": "---" }
-      ]
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Thoughts & reflections" }]
     },
     {
       "type": "paragraph",
       "content": [
-        { "type": "text", "text": "💭 Freeform notes:" }
+        {
+          "type": "text",
+          "text": "What did you think about today? Any decisions, worries, or ideas?"
+        }
       ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Lessons or insights" }]
     },
     {
       "type": "paragraph",
       "content": [
-        { "type": "text", "text": "(Delete this template and write whatever’s on your mind!)" },
-        { "type": "text", "text": " → ", "marks": [{ "type": "bold" }] }
+        {
+          "type": "text",
+          "text": "Did you learn something about yourself or life today?"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": { "level": 3 },
+      "content": [{ "type": "text", "text": "Closing note" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Anything you want to remember or carry into tomorrow."
+        }
       ]
     }
   ]
 }
+

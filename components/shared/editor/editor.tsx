@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { defaultContnet } from "@/components/shared/editor/templates";
+import { EditorMenu } from "./editor-menu";
+import { EditorBubbleMenu } from "./editor-bubble-menu";
 
 
 interface iAppProps {
@@ -37,5 +39,17 @@ export const TextEditor = ({ value, className, onBlur, onChange, invalid }: iApp
     })(),
   });
 
-  return <EditorContent editor={editor} />;
+  if (!editor) {
+    return null;
+  }
+
+  return (
+    <div className="relative space-y-2">
+      <EditorMenu editor={editor} />
+      <div className="relative">
+        <EditorContent editor={editor} />
+        <EditorBubbleMenu editor={editor} />
+      </div>
+    </div>
+  );
 };
