@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Print a header message
+echo "🔍 Running pre-commit checks..."
+
+# Run linting
+echo "📝 Linting TypeScript/React files..."
+pnpm run lint
+
+# Check the exit status of the lint command
+if [ $? -ne 0 ]; then
+  echo "❌ Linting failed. Please fix the errors and try again."
+  exit 1
+fi
+
+# Success message
+echo "✅ All checks passed! Proceeding with commit..."
