@@ -2,7 +2,7 @@
 import { useMemo } from "react"
 import { type JSONContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 import { generateHTML } from "@tiptap/html"
 
 export const RenderEditor = ({ json }: { json: JSONContent }) => {
