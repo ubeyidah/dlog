@@ -77,9 +77,18 @@ const exportAsText = () => {
               <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(window.location.href)}>
+            <DropdownMenuItem onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard");
+              } catch (error) {
+                console.error("Failed to copy link:", error);
+                toast.error("Failed to copy link");
+              }
+            }}>
               <HugeiconsIcon icon={Copy01Icon} className="h-4 w-4 mr-2" />
               Copy Link
+            </DropdownMenuItem>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={exportAsText}>
               <HugeiconsIcon icon={Download01Icon} className="h-4 w-4 mr-2" />
