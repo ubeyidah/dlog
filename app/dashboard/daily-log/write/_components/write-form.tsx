@@ -18,6 +18,7 @@ import SiteHeader from "@/components/shared/site-header";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo, useState } from "react";
+import { useWatch } from "react-hook-form";
 
 type WriteFormProps = {
   mode?: "write" | "update";
@@ -46,7 +47,8 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
   });
 
   // Track if form has been modified
-  const formValues = form.watch();
+  const formValues = useWatch({ control: form.control });
+
   const hasChanges = useMemo(() => {
     if (!isUpdateMode || !defaultValues) return true;
 

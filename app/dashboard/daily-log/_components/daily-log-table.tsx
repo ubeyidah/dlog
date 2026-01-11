@@ -50,7 +50,7 @@ import { useState } from "react";
 import { DeleteDialog } from "./delete-dialog";
 
 // Mood colors mapping
-const moodColors: Record<string, string> = {
+export const moodColors: Record<string, string> = {
   PRODUCTIVE: "bg-green-600/5 text-green-700",
   INSPIRED: "bg-blue-600/5 text-blue-700",
   GRATEFUL: "bg-purple-600/5 text-purple-700",
@@ -160,11 +160,11 @@ export function DailyLogTable() {
               }
             />
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
-                Read
-              </DropdownMenuItem>
+             <DropdownMenuContent align="end">
+               <DropdownMenuItem render={<Link href={`/dashboard/daily-log/${log.id}`} />}>
+                 <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 mr-2" />
+                 Read
+               </DropdownMenuItem>
               <DropdownMenuItem render={<Link href={`/dashboard/daily-log/edit/${log.id}`} />}>
                 <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
                 Edit

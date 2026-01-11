@@ -22,7 +22,7 @@ export function DailyLogTableSkeleton() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <TableRow key={index}>
               <TableCell>
                 <Skeleton className="h-4 w-24" />
