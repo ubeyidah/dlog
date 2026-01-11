@@ -54,10 +54,10 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
 
   const exportAsText = () => {
     const htmlContent = generateHTML(JSON.parse(log.content), [StarterKit]);
-    const textContent = htmlContent
-      .replace(/<[^>]*>/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlContent;
+    const rawTextContent = tempDiv.textContent || "";
+    const textContent = rawTextContent.replace(/\s+/g, " ").trim();
     const content = `${log.title}\n\n${textContent}\n\nTags: ${log.tags?.join(", ") || ""}\n\nDate: ${dayjs(log.createdAt).format("MMMM D, YYYY")}`;
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
