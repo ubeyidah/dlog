@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { DeleteDialog } from "../../_components/delete-dialog";
-import {RenderEditor} from "@/components/shared/editor/render-editor"
+import { RenderEditor } from "@/components/shared/editor/render-editor";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 
