@@ -89,7 +89,6 @@ const exportAsText = () => {
               <HugeiconsIcon icon={Copy01Icon} className="h-4 w-4 mr-2" />
               Copy Link
             </DropdownMenuItem>
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={exportAsText}>
               <HugeiconsIcon icon={Download01Icon} className="h-4 w-4 mr-2" />
               Export as Text
