@@ -12,7 +12,7 @@ import {
   Delete01Icon,
   MoreVerticalIcon,
   Download01Icon,
-  Copy01Icon
+  Copy01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
@@ -29,6 +29,7 @@ import { DeleteDialog } from "../../_components/delete-dialog";
 import { RenderEditor } from "@/components/shared/editor/render-editor";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
+import { toast } from "sonner";
 
 type ReadDailyLogContentProps = {
   id: string;
@@ -39,7 +40,11 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
   const { data: log } = useSuspenseQuery(
     trpc.daily_log.getById.queryOptions({ id }),
   );
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; logId?: string; logTitle?: string }>({
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    logId?: string;
+    logTitle?: string;
+  }>({
     open: false,
   });
 
@@ -47,45 +52,53 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
   const month = dayjs(log.createdAt).format("MMMM");
   const year = dayjs(log.createdAt).format("YYYY");
 
-
-const exportAsText = () => {
-  const htmlContent = generateHTML(JSON.parse(log.content), [StarterKit]);
-  const textContent = htmlContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-  const content = `${log.title}\n\n${textContent}\n\nTags: ${log.tags?.join(', ') || ''}\n\nDate: ${dayjs(log.createdAt).format('MMMM D, YYYY')}`;
-  const blob = new Blob([content], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${log.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+  const exportAsText = () => {
+    const htmlContent = generateHTML(JSON.parse(log.content), [StarterKit]);
+    const textContent = htmlContent
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const content = `${log.title}\n\n${textContent}\n\nTags: ${log.tags?.join(", ") || ""}\n\nDate: ${dayjs(log.createdAt).format("MMMM D, YYYY")}`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${log.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <>
       <SiteHeader label="Read Log">
         <DropdownMenu>
-          <DropdownMenuTrigger render={
-            <Button variant="outline" size="icon">
-              <HugeiconsIcon icon={MoreVerticalIcon} className="h-4 w-4" />
-            </Button>
-          } />
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" size="icon">
+                <HugeiconsIcon icon={MoreVerticalIcon} className="h-4 w-4" />
+              </Button>
+            }
+          />
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem render={<Link href={`/dashboard/daily-log/edit/${log.id}`} />}>
+            <DropdownMenuItem
+              render={<Link href={`/dashboard/daily-log/edit/${log.id}`} />}
+            >
               <HugeiconsIcon icon={Edit02Icon} className="h-4 w-4 mr-2" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(window.location.href);
-                toast.success("Link copied to clipboard");
-              } catch (error) {
-                console.error("Failed to copy link:", error);
-                toast.error("Failed to copy link");
-              }
-            }}>
+            <DropdownMenuItem
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(window.location.href);
+                  toast.success("Link copied to clipboard");
+                } catch (error) {
+                  console.error("Failed to copy link:", error);
+                  toast.error("Failed to copy link");
+                }
+              }}
+            >
               <HugeiconsIcon icon={Copy01Icon} className="h-4 w-4 mr-2" />
               Copy Link
             </DropdownMenuItem>
@@ -99,7 +112,13 @@ const exportAsText = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => setDeleteDialog({ open: true, logId: log.id, logTitle: log.title })}
+              onClick={() =>
+                setDeleteDialog({
+                  open: true,
+                  logId: log.id,
+                  logTitle: log.title,
+                })
+              }
             >
               <HugeiconsIcon icon={Delete01Icon} className="h-4 w-4 mr-2" />
               Delete
@@ -126,7 +145,9 @@ const exportAsText = () => {
                 </div>
 
                 <div className="flex justify-center lg:justify-start">
-                  <Badge className={`${moodColors[log.mood]} rounded-md text-sm uppercase px-6 py-3`}>
+                  <Badge
+                    className={`${moodColors[log.mood]} rounded-md text-sm uppercase px-6 py-3`}
+                  >
                     {moodEmojis[log.mood]} {log.mood.toLowerCase()}
                   </Badge>
                 </div>
@@ -173,10 +194,14 @@ const exportAsText = () => {
         <DeleteDialog
           open={deleteDialog.open}
           onOpenChange={(open) =>
-            setDeleteDialog({ open, logId: open ? deleteDialog.logId : undefined, logTitle: open ? deleteDialog.logTitle : undefined })
+            setDeleteDialog({
+              open,
+              logId: open ? deleteDialog.logId : undefined,
+              logTitle: open ? deleteDialog.logTitle : undefined,
+            })
           }
           logId={deleteDialog.logId}
-          logTitle={deleteDialog.logTitle || ''}
+          logTitle={deleteDialog.logTitle || ""}
         />
       )}
     </>
