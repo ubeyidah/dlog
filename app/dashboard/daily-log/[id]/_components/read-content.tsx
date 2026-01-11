@@ -109,7 +109,7 @@ const exportAsText = () => {
                   <div className="text-6xl lg:text-7xl font-bold text-primary/40 mb-4 tracking-tight">
                     {day}
                   </div>
-                  <div className="text-2xl lg:text-3xl font-light text-muted-foreground/80 font-semibold mb-2">
+                  <div className="text-2xl lg:text-3xl font-semibold text-muted-foreground/80 mb-2">
                     {month}
                   </div>
                   <div className="text-lg lg:text-xl font-medium text-muted-foreground">
