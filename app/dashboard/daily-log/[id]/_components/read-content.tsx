@@ -27,6 +27,8 @@ import {
 import { useState } from "react";
 import { DeleteDialog } from "../../_components/delete-dialog";
 import {RenderEditor} from "@/components/shared/editor/render-editor"
+import { generateHTML } from "@tiptap/html";
+import StarterKit from "@tiptap/starter-kit";
 
 type ReadDailyLogContentProps = {
   id: string;
@@ -45,8 +47,6 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
   const month = dayjs(log.createdAt).format("MMMM");
   const year = dayjs(log.createdAt).format("YYYY");
 
-import { generateHTML } from "@tiptap/html";
-import StarterKit from "@tiptap/starter-kit";
 
 const exportAsText = () => {
   const htmlContent = generateHTML(JSON.parse(log.content), [StarterKit]);
