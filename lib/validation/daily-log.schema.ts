@@ -34,3 +34,20 @@ export const updateDailyLogSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 export type UpdateDailyLogInput = z.infer<typeof updateDailyLogSchema>
+
+
+
+export const getAllInputSchema = z.object({
+  search: z.string().optional(),
+  mood: z.string().nullable().optional(),
+  startDate: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((val) => (val ? new Date(val) : null)),
+  endDate: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((val) => (val ? new Date(val) : null)),
+});
