@@ -1,4 +1,4 @@
-import { createDailyLogSchema, updateDailyLogSchema } from "@/lib/validation/daily-log.schema";
+import { createDailyLogSchema, getAllInputSchema, updateDailyLogSchema } from "@/lib/validation/daily-log.schema";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
@@ -8,20 +8,6 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { getConsistency, getLogStreak } from "../helper/dlog";
 
-const getAllInputSchema = z.object({
-  search: z.string().optional(),
-  mood: z.string().nullable().optional(),
-  startDate: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((val) => (val ? new Date(val) : null)),
-  endDate: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((val) => (val ? new Date(val) : null)),
-});
 
 export const dailyLogRouter = createTRPCRouter({
   create: protectedProcedure
