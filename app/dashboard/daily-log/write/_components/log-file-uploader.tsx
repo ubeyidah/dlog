@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Image01Icon, RefreshCw, Upload02Icon, Alert02Icon, Loading03Icon, Cancel01Icon, ZoomIcon } from "@hugeicons/core-free-icons";
+import { Image01Icon, RefreshCw, Upload02Icon, Alert02Icon, Loading03Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export default function LogFileUploader() {
   const [isUploading] = useState(false);
   const [progress] = useState(75);
   const [error] = useState<string | null>();
-  const [uploadedImage] = useState<string | null>("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ004amw9H5eh2daGJvA9V_GcSUlCK-cApgNw&s");
+  const [uploadedImage] = useState<string | null>();
 
   const { getInputProps, getRootProps, isDragActive } = useFileUploader({
     fileType: "image",
