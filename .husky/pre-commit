@@ -5,7 +5,7 @@ echo "🔍 Running pre-commit checks..."
 
 # Run linting
 echo "📝 Linting TypeScript/React files..."
-pnpm run lint
+bun run lint
 
 # Check the exit status of the lint command
 if [ $? -ne 0 ]; then

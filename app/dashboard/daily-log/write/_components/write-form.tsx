@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
+import LogFileUploader from "./log-file-uploader";
 
 type WriteFormProps = {
   mode?: "write" | "update";
@@ -160,11 +161,11 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
               )}
             />
 
+
           </div>
         </div>
         <div className="space-y-3 py-5">
-          <div>
-            <h3 className="px-1">Calendar View</h3>
+          <div className="max-md:hidden">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -172,62 +173,73 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
               className="rounded-md px-0! w-full"
             />
           </div>
-          <div>
 
-            <Controller
-              name="mood"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="mood">Mood</FieldLabel>
-                  <Select
-                    value={field.value ?? ""}
-                    id="mood"
-                    onValueChange={(value) => field.onChange(value)}
-                    aria-invalid={fieldState.invalid}
-                  >
-                    <SelectTrigger className={"w-full"} onBlur={field.onBlur}>
-                      <SelectValue onBlur={field.onBlur}>
-                        {field.value
-                          ? `${moodEmojis[field.value]} ${field.value.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}`
-                          : "Select mood"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LOG_MOODS.map((mood) => (
-                        <SelectItem
-                          key={mood}
-                          value={mood}
-                          className="capitalize"
-                        >
-                          {moodEmojis[mood]} {mood.toLowerCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <div>
-            <Controller
-              name="tags"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="tags">Tags</FieldLabel>
-                  <TagInput invalid={fieldState.invalid} value={field.value || []} onChange={(tags) => field.onChange(tags)} />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+          <Controller
+            name="mood"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="mood">Mood</FieldLabel>
+                <Select
+                  value={field.value ?? ""}
+                  id="mood"
+                  onValueChange={(value) => field.onChange(value)}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectTrigger className={"w-full"} onBlur={field.onBlur}>
+                    <SelectValue onBlur={field.onBlur}>
+                      {field.value
+                        ? `${moodEmojis[field.value]} ${field.value.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}`
+                        : "Select mood"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LOG_MOODS.map((mood) => (
+                      <SelectItem
+                        key={mood}
+                        value={mood}
+                        className="capitalize"
+                      >
+                        {moodEmojis[mood]} {mood.toLowerCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="tags"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="tags">Tags</FieldLabel>
+                <TagInput invalid={fieldState.invalid} value={field.value || []} onChange={(tags) => field.onChange(tags)} />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
-          </div>
+          <Controller
+            name="tags"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="memory">Drop your memory</FieldLabel>
+
+                <LogFileUploader />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
         </div>
       </div>
     </form>
