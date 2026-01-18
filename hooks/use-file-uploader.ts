@@ -42,86 +42,104 @@ export const useFileUploader = ({
   };
   const trpc = useTRPC();
   const { mutateAsync } = useMutation(trpc.s3.getUploadUrl.mutationOptions());
+  const { mutateAsync: DeleteMutateAsync } = useMutation(
+    trpc.s3.deleteFile.mutationOptions(),
+  );
 
   const [fileState, setFileState] = useState<FileState>(initalFileState);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (!acceptedFiles.length) return;
-    const file = acceptedFiles[0];
-    if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
-      URL.revokeObjectURL(fileState.objectUrl); // clean up the prev blob object before uploading
-    }
-    setFileState({
-      ...initalFileState,
-      id: uuidv4(),
-      uploading: true,
-    });
+  const onFileRemove = async () => {
+    if (!fileState.objectUrl || !fileState.fileKey) return;
+    const backupFileUrl = { ...fileState };
     try {
-      const fileRes = await mutateAsync({
-        contentType: file.type,
-        fileName: file.name,
-        size: file.size,
-      });
-      await new Promise<void>((res, rej) => {
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            const percent = (e.loaded / e.total) * 100;
-            setFileState((prev) => ({
-              ...prev,
-              progress: Math.round(percent),
-            }));
-          }
-        };
-
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            setFileState((prev) => ({
-              ...prev,
-              progress: 0,
-              uploading: false,
-              key: fileRes.fileKey,
-              objectUrl: URL.createObjectURL(file),
-            }));
-            onUpload(fileRes.fileKey);
-            res();
-          } else {
-            onError(new Error("failed to upload file"));
-            rej(new Error("failed to upload file."));
-          }
-        };
-
-        xhr.onerror = (err) => {
-          onError(
-            new Error(
-              err instanceof Error
-                ? err.message
-                : "something went wrong while uploading file",
-            ),
-          );
-          rej(err);
-        };
-        xhr.open("PUT", fileRes.url);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
-      });
-    } catch (err) {
-      onError(
-        new Error(
-          err instanceof Error
-            ? err.message
-            : "something went wrong while uploading file",
-        ),
-      );
-      setFileState((prev) => ({
-        ...prev,
-        progress: 0,
-        uploading: false,
-        error: "file upload failed",
-      }));
+      setFileState({ ...initalFileState });
+      await DeleteMutateAsync({ fileKey: fileState.fileKey });
+    } catch {
+      setFileState(backupFileUrl);
+      toast.error("Failed to delete the file. Please try again.");
     }
-  }, []);
+  };
+
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (!acceptedFiles.length) return;
+      const file = acceptedFiles[0];
+      if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(fileState.objectUrl); // clean up the prev blob object before uploading
+      }
+      setFileState({
+        ...initalFileState,
+        id: uuidv4(),
+        uploading: true,
+      });
+      try {
+        const fileRes = await mutateAsync({
+          contentType: file.type,
+          fileName: file.name,
+          size: file.size,
+        });
+        await new Promise<void>((res, rej) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = (e.loaded / e.total) * 100;
+              setFileState((prev) => ({
+                ...prev,
+                progress: Math.round(percent),
+              }));
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              setFileState((prev) => ({
+                ...prev,
+                progress: 0,
+                uploading: false,
+                fileKey: fileRes.fileKey,
+                objectUrl: URL.createObjectURL(file),
+              }));
+              onUpload(fileRes.fileKey);
+              res();
+            } else {
+              onError(new Error("failed to upload file"));
+              rej(new Error("failed to upload file."));
+            }
+          };
+
+          xhr.onerror = (err) => {
+            onError(
+              new Error(
+                err instanceof Error
+                  ? err.message
+                  : "something went wrong while uploading file",
+              ),
+            );
+            rej(err);
+          };
+          xhr.open("PUT", fileRes.url);
+          xhr.setRequestHeader("Content-Type", file.type);
+          xhr.send(file);
+        });
+      } catch (err) {
+        onError(
+          new Error(
+            err instanceof Error
+              ? err.message
+              : "something went wrong while uploading file",
+          ),
+        );
+        setFileState((prev) => ({
+          ...prev,
+          progress: 0,
+          uploading: false,
+          error: "file upload failed",
+        }));
+      }
+    },
+    [onError, onUpload, fileState.objectUrl, mutateAsync],
+  );
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
     if (!fileRejection.length) return;
@@ -163,6 +181,7 @@ export const useFileUploader = ({
     getRootProps,
     getInputProps,
     isDragActive,
+    onFileRemove,
     ...fileState,
   };
 };

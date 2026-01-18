@@ -7,7 +7,6 @@ import {
   RefreshCw,
   Upload02Icon,
   Alert02Icon,
-  Loading03Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -31,6 +30,7 @@ export default function LogFileUploader() {
     objectUrl: uploadedImage,
     progress,
     uploading: isUploading,
+    onFileRemove,
   } = useFileUploader({
     fileType: "image",
     onError: () => null,
@@ -38,7 +38,7 @@ export default function LogFileUploader() {
   });
 
   if (uploadedImage) {
-    return <SuccessState image={uploadedImage} />;
+    return <SuccessState image={uploadedImage} onRemove={onFileRemove} />;
   }
 
   const renderState = () => {
@@ -104,15 +104,11 @@ function ErrorState({ error }: ErrorStateProps) {
 
 interface SuccessStateProps {
   image: string;
+  onRemove: () => void;
 }
 
-function SuccessState({ image }: SuccessStateProps) {
+function SuccessState({ image, onRemove }: SuccessStateProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
-  const handleRemove = () => {
-    // TODO: Implement remove functionality
-    console.log("Remove image");
-  };
 
   const handleOpenPreview = () => {
     setIsPreviewOpen(true);
@@ -133,7 +129,7 @@ function SuccessState({ image }: SuccessStateProps) {
           <Button
             size="sm"
             className="rounded-full shadow-lg bg-black/70 hover:bg-black/80 text-white border-0"
-            onClick={handleRemove}
+            onClick={onRemove}
           >
             <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
           </Button>
