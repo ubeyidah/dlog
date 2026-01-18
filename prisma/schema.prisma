@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String     @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   sessions      Session[]
   accounts      Account[]
   dailyLog      DailyLog[]
@@ -78,13 +78,31 @@ model DailyLog {
   mood    LOG_MOOD
   tags    String[]
   userId  String
-  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  files DlogFile[]
+
   @@index([userId])
   @@index([createdAt])
+}
+
+model DlogFile {
+  id         String        @id @default(cuid())
+  fileKey    String
+  fileType   DlogFileTypes @default(IMAGE)
+  dailyLog   DailyLog      @relation(fields: [dailyLogId], references: [id])
+  dailyLogId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DlogFileTypes {
+  IMAGE
+  VIDEO
 }
 
 enum LOG_MOOD {
