@@ -11,11 +11,13 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "db:seed": "bun prisma/seed.ts",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "prepare": "husky"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.971.0",
     "@base-ui/react": "^1.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@hugeicons/core-free-icons": "^3.1.0",
