@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 
-import { Image01Icon, RefreshCw, Upload02Icon, Alert02Icon, Loading03Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import {
+  Image01Icon,
+  RefreshCw,
+  Upload02Icon,
+  Alert02Icon,
+  Loading03Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Button } from "@/components/ui/button";
@@ -16,14 +23,18 @@ export default function LogFileUploader() {
   const fileInfo = UPLOAD_CONFIGS["image"];
   const maxSizeMB = bytesToMB(fileInfo.maxSize);
 
-  // Dummy states for demonstration
-  const [isUploading] = useState(false);
-  const [progress] = useState(75);
-  const [error] = useState<string | null>();
-  const [uploadedImage] = useState<string | null>();
-
-  const { getInputProps, getRootProps, isDragActive } = useFileUploader({
+  const {
+    getInputProps,
+    getRootProps,
+    isDragActive,
+    error,
+    objectUrl: uploadedImage,
+    progress,
+    uploading: isUploading,
+  } = useFileUploader({
     fileType: "image",
+    onError: () => null,
+    onUpload: () => null,
   });
 
   if (uploadedImage) {
@@ -75,7 +86,9 @@ function ErrorState({ error }: ErrorStateProps) {
       >
         <HugeiconsIcon icon={Alert02Icon} className="size-4 text-destructive" />
       </div>
-      <p className="mb-1.5 font-medium text-sm text-destructive">Upload failed</p>
+      <p className="mb-1.5 font-medium text-sm text-destructive">
+        Upload failed
+      </p>
       <p className="text-muted-foreground text-xs mb-4">{error}</p>
       <Button className="mt-2" variant="outline">
         <HugeiconsIcon
@@ -133,7 +146,9 @@ function SuccessState({ image }: SuccessStateProps) {
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-7xl max-h-[90vh]">
-          <DialogTitle className="text-lg font-semibold text-foreground">Memory Preview</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-foreground">
+            Memory Preview
+          </DialogTitle>
           <div className="relative flex items-center justify-center w-full h-full min-h-[400px]">
             <img
               src={image}
@@ -158,14 +173,10 @@ function ProgressState({ progress }: ProgressStateProps) {
   return (
     <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
       <div className="mb-3 flex items-center justify-center">
-        <div className="relative">
-          <HugeiconsIcon
-            icon={Loading03Icon}
-            className="size-16 animate-spin text-primary"
-          />
-          <div className="absolute -inset-2 flex items-center justify-center">
-            <span className="text-xs font-semibold text-primary">{progress}%</span>
-          </div>
+        <div>
+          <p className="text-xs text-center font-semibold text-primary">
+            {progress}%
+          </p>
         </div>
       </div>
       <p className="mb-1.5 font-medium text-sm">Uploading your log image...</p>
@@ -177,8 +188,7 @@ function ProgressState({ progress }: ProgressStateProps) {
             ? "Processing image..."
             : progress < 75
               ? "Almost there..."
-              : "Finalizing upload..."
-        }
+              : "Finalizing upload..."}
       </p>
     </div>
   );
@@ -197,7 +207,9 @@ function IdleState({ maxSizeMB }: IdleStateProps) {
       >
         <HugeiconsIcon icon={Image01Icon} className="size-4 opacity-60" />
       </div>
-      <p className="mb-1.5 font-medium text-sm">Drop your daily log image here</p>
+      <p className="mb-1.5 font-medium text-sm">
+        Drop your daily log image here
+      </p>
       <p className="text-muted-foreground text-xs">
         SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
       </p>
