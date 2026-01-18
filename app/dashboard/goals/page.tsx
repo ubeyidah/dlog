@@ -7,7 +7,7 @@ import {
   GlobalSearchIcon,
   CheckmarkCircle01Icon,
   Target01Icon,
-  TrophyIcon,
+  Trophy,
   AddCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -90,7 +90,7 @@ const GoalsPage = () => {
     {
       label: "Success Rate",
       value: "85%",
-      icon: TrophyIcon,
+      icon: Trophy,
       color: "text-yellow-500",
     },
     {
@@ -238,7 +238,7 @@ const GoalsPage = () => {
       <Card className="mt-6 bg-gradient-to-r from-primary/10 to-primary/5">
         <CardContent className="p-6 text-center">
           <HugeiconsIcon
-            icon={TrophyIcon}
+            icon={Trophy}
             className="h-12 w-12 mx-auto mb-3 text-primary"
           />
           <h3 className="text-xl font-bold mb-2">Keep Going! 🌟</h3>

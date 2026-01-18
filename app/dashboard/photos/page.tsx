@@ -165,6 +165,7 @@ const PhotosPage = () => {
               className="group overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
             >
               <div className="relative aspect-video overflow-hidden bg-muted">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
                   alt={photo.title}
@@ -210,6 +211,7 @@ const PhotosPage = () => {
             >
               <div className="flex items-center gap-4 p-4">
                 <div className="relative w-32 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.url}
                     alt={photo.title}

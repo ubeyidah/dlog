@@ -4,7 +4,6 @@ import SiteHeader from "@/components/shared/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  SettingsIcon,
   UserIcon,
   NotificationIcon,
   SecurityIcon,

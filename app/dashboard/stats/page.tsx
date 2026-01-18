@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Chart02FreeIcons,
-  TrendUpIcon,
+  TradeUpFreeIcons as TrendUpIcon,
   CalendarIcon,
   Smile,
   FireIcon,

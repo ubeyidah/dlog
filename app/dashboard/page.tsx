@@ -8,7 +8,7 @@ import {
   CalendarIcon,
   FireIcon,
   Smile,
-  TrendUpIcon,
+  TradeUpFreeIcons as TrendUpIcon,
   GlobalSearchIcon,
   GooglePhotosIcon,
 } from "@hugeicons/core-free-icons";
