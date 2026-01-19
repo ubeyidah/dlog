@@ -5,13 +5,15 @@ import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/s3-client";
 import z from "zod";
+import { getDlogFileFolder } from "@/lib/utils";
 
 export const s3BucketRoute = createTRPCRouter({
   getUploadUrl: protectedProcedure
     .input(fileUploadSchema)
     .mutation(async ({ input }) => {
       // TODO: check if the user has already uploaded the image
-      const uniqeKey = `daily-log/${uuidv4()}-${input.fileName}`;
+      const dirName = getDlogFileFolder();
+      const uniqeKey = `${dirName}/${uuidv4()}-${input.fileName}`;
       const command = new PutObjectCommand({
         Bucket: "dlog",
         Key: uniqeKey,

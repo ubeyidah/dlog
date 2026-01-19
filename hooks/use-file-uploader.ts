@@ -1,5 +1,5 @@
 import { UPLOAD_CONFIGS } from "@/lib/constants";
-import { bytesToMB } from "@/lib/utils";
+import { bytesToMB, fileKeyToUrl } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -23,19 +23,21 @@ interface iAppProps {
   fileType: FileType;
   onUpload: (fileKey: string) => void;
   onError: (error: Error) => void;
+  defaultValue: string | null;
 }
 
 export const useFileUploader = ({
   fileType = "image",
   onUpload,
   onError,
+  defaultValue,
 }: iAppProps) => {
   const initalFileState: FileState = {
     error: null,
     file: null,
     fileType,
     id: null,
-    objectUrl: null,
+    objectUrl: defaultValue ? fileKeyToUrl(defaultValue) : null,
     progress: 0,
     uploading: false,
     fileKey: null,

@@ -18,7 +18,12 @@ import { useFileUploader } from "@/hooks/use-file-uploader";
 import { UPLOAD_CONFIGS } from "@/lib/constants";
 import { bytesToMB } from "@/lib/utils";
 
-export default function LogFileUploader() {
+interface iAppProps {
+  value: string | null;
+  onChange: (value: string) => void;
+}
+
+export default function LogFileUploader({ onChange, value }: iAppProps) {
   const fileInfo = UPLOAD_CONFIGS["image"];
   const maxSizeMB = bytesToMB(fileInfo.maxSize);
 
@@ -34,7 +39,8 @@ export default function LogFileUploader() {
   } = useFileUploader({
     fileType: "image",
     onError: () => null,
-    onUpload: () => null,
+    onUpload: onChange,
+    defaultValue: value,
   });
 
   if (uploadedImage) {
