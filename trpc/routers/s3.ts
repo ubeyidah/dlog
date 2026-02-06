@@ -7,6 +7,9 @@ import { S3 } from "@/lib/s3-client";
 import z from "zod";
 import { getDlogFileFolder } from "@/lib/utils";
 
+export const deleteFileSchema = z.object({ fileKey: z.string() });
+export type DeleteFileInput = z.infer<typeof deleteFileSchema>;
+
 export const s3BucketRoute = createTRPCRouter({
   getUploadUrl: protectedProcedure
     .input(fileUploadSchema)
@@ -31,7 +34,7 @@ export const s3BucketRoute = createTRPCRouter({
       };
     }),
   deleteFile: protectedProcedure
-    .input(z.object({ fileKey: z.string() }))
+    .input(deleteFileSchema)
     .mutation(async ({ input }) => {
       //TODO: check if the fileKey is owned by the user
       const command = new DeleteObjectCommand({
@@ -41,6 +44,7 @@ export const s3BucketRoute = createTRPCRouter({
       await S3.send(command);
       return {
         message: "file deleted successfully",
+        fileKey: input.fileKey,
       };
     }),
 });
