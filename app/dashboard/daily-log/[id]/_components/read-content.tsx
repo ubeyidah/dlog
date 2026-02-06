@@ -24,12 +24,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
 import { DeleteDialog } from "../../_components/delete-dialog";
 import { RenderEditor } from "@/components/shared/editor/render-editor";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import { toast } from "sonner";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 type ReadDailyLogContentProps = {
   id: string;
@@ -47,6 +48,7 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
   }>({
     open: false,
   });
+  const [showImage, setShowImage] = useState(false);
 
   const day = dayjs(log.createdAt).format("DD");
   const month = dayjs(log.createdAt).format("MMMM");
@@ -169,9 +171,25 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
+)}
+
+                 {log.files && log.files.length > 0 && (
+                   <div className="space-y-4">
+                     <div 
+                       className={cn(
+                         "cursor-pointer rounded-lg border-2 border-dashed border-muted-foreground/20 p-4 text-center transition-all hover:border-muted-foreground/40",
+                         showImage && "border-solid border-primary/50"
+                       )}
+                       onClick={() => setShowImage(!showImage)}
+                     >
+                       <p className="text-sm text-muted-foreground">
+                         {showImage ? "Hide image" : "Show image"}
+                       </p>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             </div>
 
             <div className="lg:col-span-2 space-y-8">
               <div className="space-y-8">
@@ -184,6 +202,20 @@ export const ReadDailyLogContent = ({ id }: ReadDailyLogContentProps) => {
                     <RenderEditor json={JSON.parse(log.content)} />
                   </div>
                 </div>
+
+                {showImage && log.files && log.files.length > 0 && (
+                  <div className="w-full">
+                    {log.files.map((file) => (
+                      <div key={file.id} className="w-full">
+                        <img
+                          src={`https://dlog.t3.storage.dev/${file.fileKey}`}
+                          alt={log.title}
+                          className="w-full h-auto rounded-lg shadow-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

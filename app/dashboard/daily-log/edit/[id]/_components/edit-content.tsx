@@ -23,6 +23,7 @@ export const EditDailyLogContent = ({ id }: EditDailyLogContentProps) => {
         content: log.content,
         mood: log.mood,
         tags: log.tags || [],
+        fileKey: !log.files.length ? "" : log.files[0].fileKey,
       }}
       createdAt={log.createdAt}
     />

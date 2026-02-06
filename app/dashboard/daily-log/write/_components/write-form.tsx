@@ -62,6 +62,7 @@ export const WriteForm = ({
       content: "",
       mood: undefined,
       tags: [],
+      fileKey: "",
     },
   });
 
@@ -75,6 +76,7 @@ export const WriteForm = ({
       formValues.title !== defaultValues.title ||
       formValues.content !== defaultValues.content ||
       formValues.mood !== defaultValues.mood ||
+      formValues.fileKey !== defaultValues.fileKey ||
       JSON.stringify(formValues.tags) !== JSON.stringify(defaultValues.tags)
     );
   }, [formValues, defaultValues, isUpdateMode]);
@@ -115,6 +117,7 @@ export const WriteForm = ({
       updateMutation.mutate(data as UpdateDailyLogInput);
     } else {
       createMutation.mutate(data as CreateDailyLogInput);
+      console.log(data);
     }
   };
 
@@ -258,7 +261,6 @@ export const WriteForm = ({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="memory">Drop your memory</FieldLabel>
-
                 <LogFileUploader
                   value={field.value || null}
                   onChange={field.onChange}

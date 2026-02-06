@@ -138,3 +138,13 @@ This project uses the Next.js App Router with specific conventions:
 ## 7. External Rules
 
 _(No specific .cursorrules or Copilot instructions were found at the time of writing. If added, they take precedence over general rules here.)_
+
+## 8. AI Strict Mode (Agents Only)
+
+AI agents must operate in **strict mode**:
+
+- **Plan First:** Provide a short, step-by-step plan before proposing changes.
+- **Tech Selection Discipline:** Only use technologies already present in `package.json`. If a new dependency is needed, ask for permission first.
+- **No Guessing:** Read relevant files before proposing changes. If context is missing, request it.
+- **Consistency:** Follow project conventions for file naming, imports, typing, and formatting.
+- **Minimal Diffs:** Avoid large refactors unless explicitly requested.

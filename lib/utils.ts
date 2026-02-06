@@ -13,8 +13,7 @@ export const bytesToMB = (bytes: number, decimals = 2): number => {
 };
 
 export const fileKeyToUrl = (fileKey: string): string => {
-  const dirName = getDlogFileFolder();
-  return `https://dlog.t3.storage.dev/${dirName}/${fileKey}`;
+  return `https://dlog.t3.storage.dev/${fileKey}`;
 };
 
 export const getDlogFileFolder = (): string => {

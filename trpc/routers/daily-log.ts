@@ -52,10 +52,10 @@ export const dailyLogRouter = createTRPCRouter({
         data: {
           ...data,
           userId: ctx.userId,
-          ...(input.fileKey && {
+          ...(fileKey && {
             files: {
               create: {
-                fileKey: input.fileKey,
+                fileKey: fileKey,
                 fileType: "IMAGE",
               },
             },
@@ -72,12 +72,12 @@ export const dailyLogRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.userId,
         },
-        select: {
+        include: {
           files: {
             select: {
+              id: true,
               fileKey: true,
               fileType: true,
-              id: true,
             },
           },
         },

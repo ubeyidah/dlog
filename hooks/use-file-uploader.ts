@@ -2,7 +2,7 @@ import { UPLOAD_CONFIGS } from "@/lib/constants";
 import { bytesToMB, fileKeyToUrl } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -32,7 +32,7 @@ export const useFileUploader = ({
   onError,
   defaultValue,
 }: iAppProps) => {
-  const initalFileState: FileState = {
+  const initalFileState = useMemo((): FileState => ({
     error: null,
     file: null,
     fileType,
@@ -41,7 +41,7 @@ export const useFileUploader = ({
     progress: 0,
     uploading: false,
     fileKey: null,
-  };
+  }), [fileType, defaultValue]);
   const trpc = useTRPC();
   const { mutateAsync } = useMutation(trpc.s3.getUploadUrl.mutationOptions());
   const { mutateAsync: DeleteMutateAsync } = useMutation(
@@ -55,6 +55,7 @@ export const useFileUploader = ({
     const backupFileUrl = { ...fileState };
     try {
       setFileState({ ...initalFileState });
+      onUpload("");
       await DeleteMutateAsync({ fileKey: fileState.fileKey });
     } catch {
       setFileState(backupFileUrl);
@@ -140,7 +141,7 @@ export const useFileUploader = ({
         }));
       }
     },
-    [onError, onUpload, fileState.objectUrl, mutateAsync],
+    [onError, onUpload, fileState.objectUrl, mutateAsync, initalFileState],
   );
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
