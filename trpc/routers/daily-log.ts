@@ -13,6 +13,7 @@ export const dailyLogRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createDailyLogSchema)
     .mutation(async ({ ctx, input }) => {
+      const { fileKey, ...data } = input;
       const today = dayjs().startOf("day").toDate();
       const isAreadyLogged = await prisma.dailyLog.findFirst({
         where: {
@@ -30,7 +31,20 @@ export const dailyLogRouter = createTRPCRouter({
         });
       }
 
-      await prisma.dailyLog.create({ data: { ...input, userId: ctx.userId } });
+      await prisma.dailyLog.create({
+        data: {
+          ...data,
+          userId: ctx.userId,
+          ...(fileKey && {
+            files: {
+              create: {
+                fileKey: fileKey,
+                fileType: "IMAGE",
+              },
+            },
+          }),
+        },
+      });
       return { message: "Daily log created successfully" };
     }),
   getById: protectedProcedure
@@ -40,6 +54,15 @@ export const dailyLogRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.userId,
+        },
+        include: {
+          files: {
+            select: {
+              id: true,
+              fileKey: true,
+              fileType: true,
+            },
+          },
         },
       });
 
@@ -55,12 +78,15 @@ export const dailyLogRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updateDailyLogSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
+      const { id, fileKey, ...data } = input;
 
       const existingLog = await prisma.dailyLog.findFirst({
         where: {
           id,
           userId: ctx.userId,
+        },
+        include: {
+          files: true,
         },
       });
 
@@ -71,13 +97,36 @@ export const dailyLogRouter = createTRPCRouter({
         });
       }
 
-      await prisma.dailyLog.update({
-        where: { id },
-        data,
+      await prisma.$transaction(async (tx) => {
+        await tx.dailyLog.update({
+          where: { id },
+          data,
+        });
+
+        if (fileKey) {
+          if (existingLog.files.length > 0) {
+            await tx.dlogFile.updateMany({
+              where: { dailyLogId: id },
+              data: {
+                fileKey,
+                fileType: "IMAGE",
+              },
+            });
+          } else {
+            await tx.dlogFile.create({
+              data: {
+                dailyLogId: id,
+                fileKey,
+                fileType: "IMAGE",
+              },
+            });
+          }
+        }
       });
 
       return { message: "Daily log updated successfully" };
     }),
+
   getAll: protectedProcedure
     .input(getAllInputSchema)
     .query(async ({ ctx, input }) => {
@@ -94,13 +143,13 @@ export const dailyLogRouter = createTRPCRouter({
           ...(mood && { mood: mood as LOG_MOOD }),
           ...(startDate || endDate
             ? {
-              createdAt: {
-                ...(startDate && {
-                  gte: dayjs(startDate).startOf("day").toDate(),
-                }),
-                ...(endDate && { lte: dayjs(endDate).endOf("day").toDate() }),
-              },
-            }
+                createdAt: {
+                  ...(startDate && {
+                    gte: dayjs(startDate).startOf("day").toDate(),
+                  }),
+                  ...(endDate && { lte: dayjs(endDate).endOf("day").toDate() }),
+                },
+              }
             : {}),
         },
         orderBy: { createdAt: "desc" },
@@ -110,21 +159,42 @@ export const dailyLogRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const result = await prisma.dailyLog.delete({
+      const dlog = await prisma.dailyLog.findFirst({
         where: {
           id: input.id,
           userId: ctx.userId,
         },
+        include: {
+          files: true,
+        },
       });
 
-      if (!result) {
+      if (!dlog) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Daily log not found",
-        })
+          message: "Daily log not found or access denied",
+        });
       }
-      return { message: "Daily log deleted successfully" };
+
+      if (dlog.files.length > 0) {
+        await prisma.dlogFile.deleteMany({
+          where: {
+            dailyLogId: dlog.id,
+          },
+        });
+      }
+
+      await prisma.dailyLog.delete({
+        where: {
+          id: dlog.id,
+        },
+      });
+
+      return {
+        message: "Daily log and related files deleted successfully",
+      };
     }),
+
   stats: protectedProcedure.query(async ({ ctx }) => {
     const [totalMemories, avgMood, streak, { consistency }] = await Promise.all(
       [

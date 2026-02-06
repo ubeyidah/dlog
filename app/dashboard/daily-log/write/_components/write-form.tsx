@@ -1,9 +1,21 @@
-"use client"
+"use client";
 import { TextEditor } from "@/components/shared/editor/editor";
 import { Calendar } from "@/components/ui/calendar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { moodEmojis } from "@/lib/moods";
-import { CreateDailyLogInput, createDailyLogSchema, UpdateDailyLogInput, updateDailyLogSchema, LOG_MOODS } from "@/lib/validation/daily-log.schema";
+import {
+  CreateDailyLogInput,
+  createDailyLogSchema,
+  UpdateDailyLogInput,
+  updateDailyLogSchema,
+  LOG_MOODS,
+} from "@/lib/validation/daily-log.schema";
 import dayjs from "dayjs";
 import { useTRPC } from "@/trpc/client";
 import { Controller, useForm } from "react-hook-form";
@@ -19,6 +31,7 @@ import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
+import LogFileUploader from "./log-file-uploader";
 
 type WriteFormProps = {
   mode?: "write" | "update";
@@ -26,23 +39,30 @@ type WriteFormProps = {
   createdAt?: Date | string;
 };
 
-export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFormProps) => {
+export const WriteForm = ({
+  mode = "write",
+  defaultValues,
+  createdAt,
+}: WriteFormProps) => {
   const isUpdateMode = mode === "update";
   const date = createdAt ? dayjs(createdAt) : dayjs();
   const formattedDate = date.format("dddd, MMMM D, YYYY");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    createdAt ? new Date(createdAt) : undefined
+    createdAt ? new Date(createdAt) : undefined,
   );
 
   const router = useRouter();
   const trpc = useTRPC();
   const form = useForm<CreateDailyLogInput | UpdateDailyLogInput>({
-    resolver: zodResolver(isUpdateMode ? updateDailyLogSchema : createDailyLogSchema),
+    resolver: zodResolver(
+      isUpdateMode ? updateDailyLogSchema : createDailyLogSchema,
+    ),
     defaultValues: defaultValues || {
       title: "",
       content: "",
       mood: undefined,
       tags: [],
+      fileKey: "",
     },
   });
 
@@ -56,6 +76,7 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
       formValues.title !== defaultValues.title ||
       formValues.content !== defaultValues.content ||
       formValues.mood !== defaultValues.mood ||
+      formValues.fileKey !== defaultValues.fileKey ||
       JSON.stringify(formValues.tags) !== JSON.stringify(defaultValues.tags)
     );
   }, [formValues, defaultValues, isUpdateMode]);
@@ -68,8 +89,10 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
         router.push("/dashboard/daily-log");
       },
       onError: (error) => {
-        toast.error(error.message || "Something went wrong while creating the daily log.");
-      }
+        toast.error(
+          error.message || "Something went wrong while creating the daily log.",
+        );
+      },
     }),
   );
 
@@ -80,8 +103,10 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
         router.push("/dashboard/daily-log");
       },
       onError: (error) => {
-        toast.error(error.message || "Something went wrong while updating the daily log.");
-      }
+        toast.error(
+          error.message || "Something went wrong while updating the daily log.",
+        );
+      },
     }),
   );
 
@@ -92,12 +117,12 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
       updateMutation.mutate(data as UpdateDailyLogInput);
     } else {
       createMutation.mutate(data as CreateDailyLogInput);
+      console.log(data);
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(handleSave)}>
-
       <SiteHeader label={isUpdateMode ? "Edit Log" : "Write"}>
         <Button
           type="submit"
@@ -108,13 +133,14 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
             <>
               <Spinner /> {isUpdateMode ? "Updating..." : "Saving..."}
             </>
+          ) : isUpdateMode ? (
+            "Update Changes"
           ) : (
-            isUpdateMode ? "Update Changes" : "Save"
+            "Save"
           )}
         </Button>
       </SiteHeader>
       <div className="grid gap-6 md:grid-cols-[3fr_1fr]">
-
         <div>
           <div className="py-5">
             <h1 className="text-2xl py-1 font-bold text-muted-foreground">
@@ -130,7 +156,10 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
                   <input
                     {...field}
                     placeholder="What defines today?"
-                    className={cn("bg-border/40 p-3 outline-none border border-transparent focus:border-border w-full text-xl font-sans text-foreground placeholder:font-semibold rounded-sm", fieldState.invalid && "border-destructive/50")}
+                    className={cn(
+                      "bg-border/40 p-3 outline-none border border-transparent focus:border-border w-full text-xl font-sans text-foreground placeholder:font-semibold rounded-sm",
+                      fieldState.invalid && "border-destructive/50",
+                    )}
                     id="title"
                   />
                   {fieldState.invalid && (
@@ -159,12 +188,10 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
                 </Field>
               )}
             />
-
           </div>
         </div>
         <div className="space-y-3 py-5">
-          <div>
-            <h3 className="px-1">Calendar View</h3>
+          <div className="max-md:hidden">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -172,65 +199,80 @@ export const WriteForm = ({ mode = "write", defaultValues, createdAt }: WriteFor
               className="rounded-md px-0! w-full"
             />
           </div>
-          <div>
 
-            <Controller
-              name="mood"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="mood">Mood</FieldLabel>
-                  <Select
-                    value={field.value ?? ""}
-                    id="mood"
-                    onValueChange={(value) => field.onChange(value)}
-                    aria-invalid={fieldState.invalid}
-                  >
-                    <SelectTrigger className={"w-full"} onBlur={field.onBlur}>
-                      <SelectValue onBlur={field.onBlur}>
-                        {field.value
-                          ? `${moodEmojis[field.value]} ${field.value.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}`
-                          : "Select mood"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LOG_MOODS.map((mood) => (
-                        <SelectItem
-                          key={mood}
-                          value={mood}
-                          className="capitalize"
-                        >
-                          {moodEmojis[mood]} {mood.toLowerCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <div>
-            <Controller
-              name="tags"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="tags">Tags</FieldLabel>
-                  <TagInput invalid={fieldState.invalid} value={field.value || []} onChange={(tags) => field.onChange(tags)} />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+          <Controller
+            name="mood"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="mood">Mood</FieldLabel>
+                <Select
+                  value={field.value ?? ""}
+                  id="mood"
+                  onValueChange={(value) => field.onChange(value)}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectTrigger className={"w-full"} onBlur={field.onBlur}>
+                    <SelectValue onBlur={field.onBlur}>
+                      {field.value
+                        ? `${moodEmojis[field.value]} ${field.value.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}`
+                        : "Select mood"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LOG_MOODS.map((mood) => (
+                      <SelectItem
+                        key={mood}
+                        value={mood}
+                        className="capitalize"
+                      >
+                        {moodEmojis[mood]} {mood.toLowerCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="tags"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="tags">Tags</FieldLabel>
+                <TagInput
+                  invalid={fieldState.invalid}
+                  value={field.value || []}
+                  onChange={(tags) => field.onChange(tags)}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
-          </div>
+          <Controller
+            name="fileKey"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="memory">Drop your memory</FieldLabel>
+                <LogFileUploader
+                  value={field.value || null}
+                  onChange={field.onChange}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
         </div>
       </div>
     </form>
   );
 };
-

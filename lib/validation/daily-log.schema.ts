@@ -1,37 +1,28 @@
-import z from "zod"
-import { LOG_MOOD } from "../generated/prisma/enums"
+import z from "zod";
+import { LOG_MOOD } from "../generated/prisma/enums";
 
-export const LOG_MOODS = Object.values(LOG_MOOD).map(mood => mood)
-
+export const LOG_MOODS = Object.values(LOG_MOOD).map((mood) => mood);
 
 export const createDailyLogSchema = z.object({
-  title: z
-    .string()
-    .min(6, "Title should be at least 6 characters."),
-  content: z
-    .string()
-    .min(10, "Content should be at least 10 characters."),
-  mood: z
-    .enum([...LOG_MOODS], {
-      message: "Please select a valid mood.",
-    }),
+  title: z.string().min(6, "Title should be at least 6 characters."),
+  content: z.string().min(10, "Content should be at least 10 characters."),
+  mood: z.enum([...LOG_MOODS], {
+    message: "Please select a valid mood.",
+  }),
   tags: z.array(z.string()).optional(),
+  fileKey: z.string().optional(),
 });
-export type CreateDailyLogInput = z.infer<typeof createDailyLogSchema>
+export type CreateDailyLogInput = z.infer<typeof createDailyLogSchema>;
 
 export const updateDailyLogSchema = z.object({
   id: z.string(),
-  title: z
-    .string()
-    .min(6, "Title should be at least 6 characters."),
-  content: z
-    .string()
-    .min(10, "Content should be at least 10 characters."),
-  mood: z
-    .enum([...LOG_MOODS], {
-      message: "Please select a valid mood.",
-    }),
+  title: z.string().min(6, "Title should be at least 6 characters."),
+  content: z.string().min(10, "Content should be at least 10 characters."),
+  mood: z.enum([...LOG_MOODS], {
+    message: "Please select a valid mood.",
+  }),
   tags: z.array(z.string()).optional(),
+  fileKey: z.string().optional(),
 });
 export type UpdateDailyLogInput = z.infer<typeof updateDailyLogSchema>
 
